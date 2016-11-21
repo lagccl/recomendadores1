@@ -1,0 +1,198 @@
+/* CSS declarations go here */
+body {
+    font-family: sans-serif;
+    background-color: #315481;
+    background-image: linear-gradient(to bottom, #315481, #918e82 100%);
+    background-attachment: fixed;
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    padding: 0;
+    margin: 0;
+
+    font-size: 14px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: 100%;
+    background: white;
+}
+
+header {
+    background: #d2edf4;
+    background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);
+    padding: 20px 15px 15px 15px;
+    position: relative;
+}
+
+#login-buttons {
+    display: block;
+}
+
+h1 {
+    font-size: 1.5em;
+    margin: 0;
+    margin-bottom: 10px;
+    display: inline-block;
+    margin-right: 1em;
+}
+
+form {
+    margin-top: 10px;
+    margin-bottom: -10px;
+    position: relative;
+}
+
+.new-task input {
+    box-sizing: border-box;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    width: 100%;
+    padding-right: 80px;
+    font-size: 1em;
+}
+
+.new-task input:focus {
+    outline: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    background: white;
+}
+
+.delete {
+    float: right;
+    font-weight: bold;
+    background: none;
+    font-size: 1em;
+    border: none;
+    position: relative;
+}
+
+li {
+    position: relative;
+    list-style: none;
+    padding: 15px;
+    border-bottom: #eee solid 1px;
+}
+
+li .text {
+    margin-left: 10px;
+}
+
+li.checked {
+    color: #888;
+}
+
+li.checked .text {
+    text-decoration: line-through;
+}
+
+li.private {
+    background: #eee;
+    border-color: #ddd;
+}
+
+header .hide-completed {
+    float: right;
+}
+
+.toggle-private {
+    margin-left: 5px;
+}
+
+@media (max-width: 600px) {
+    li {
+        padding: 12px 15px;
+    }
+
+    .search {
+        width: 150px;
+        clear: both;
+    }
+
+    .new-task input {
+        padding-bottom: 5px;
+    }
+}
+
+.list-group-item {
+    word-wrap: break-word;
+}
+
+/****TABS*****/
+
+.nav-tabs {
+    border-bottom: 2px solid #DDD;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+    border-width: 0;
+}
+
+.nav-tabs > li > a {
+    border: none;
+    color: #666;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li > a:hover {
+    border: none;
+    color: #4285F4 !important;
+    background: transparent;
+}
+
+.nav-tabs > li > a::after {
+    content: "";
+    background: #4285F4;
+    height: 2px;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    bottom: -1px;
+    transition: all 250ms ease 0s;
+    transform: scale(0);
+}
+
+.nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after {
+    transform: scale(1);
+}
+
+.tab-nav > li > a::after {
+    background: #21527d none repeat scroll 0% 0%;
+    color: #fff;
+}
+
+.tab-pane {
+    padding: 15px 0;
+}
+
+.tab-content {
+    padding: 0px 20px 20px 20px
+}
+
+.card {
+    background: #FFF none repeat scroll 0% 0%;
+    /*box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);*/
+    margin-bottom: 30px;
+}
+
+.login {
+    min-width: 300px;
+}
+
+.center-ik {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 0px;
+}
