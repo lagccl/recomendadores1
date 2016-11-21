@@ -8,8 +8,6 @@ import {English} from "../imports/startup/english.js";
 import {Posts} from "../imports/api/posts.js";
 import {Projects} from '../imports/api/projects';
 /*Algorithms and libraries*/
-//import 'log4js/lib/appenders/stdout'
-//import 'log4js/lib/appenders/stderr'
 import {BM25} from "../imports/startup/bm25.js";
 import natural from "natural";
 import lda from "lda";

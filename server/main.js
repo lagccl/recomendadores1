@@ -14,6 +14,12 @@ function seed() {
     if (Meteor.users.find({}).count() == 0) {
         console.log("Seeding data");
         let promise = new Promise((resolve, reject) => {
+            //let path = Assets.absoluteFilePath("Posts.zip");
+            var pathToFile = Meteor.absolutePath;
+            extractZip(pathToFile +"/private/Posts.zip", pathToFile+"/private", true, function(error)
+            {
+                if (error) console.log("Error extracting ZIP file: " + error);
+            });
             importData();
             readStackExchangeXML('Posts.xml');
             resolve(true);
