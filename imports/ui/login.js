@@ -1,9 +1,12 @@
+import {Meteor} from 'meteor/meteor';
+import {Blaze} from 'meteor/blaze';
+import {Template} from 'meteor/templating';
 import {Accounts} from "meteor/accounts-base";
 import {UserProject} from "../startup/user-project";
 import "./login.html";
 
 Template.login.onRendered(function () {
-    var parentView = Blaze.currentView.parentView.parentView;
+    let parentView = Blaze.currentView.parentView.parentView;
     this.parentInstance = parentView.templateInstance().state;
 });
 
@@ -29,6 +32,7 @@ function loginWith(email, pwd, instance) {
             }
         }],
         userCallback(error) {
+
             if (!error) {
                 let userInfo = Meteor.user();
                 let info = UserProject[email];
@@ -36,12 +40,17 @@ function loginWith(email, pwd, instance) {
                 let technique = info.technique;
                 let lda = info.lda;
                 let mf = info.mf;
-                console.log(userInfo.isAdmin);
-                instance.parentInstance.set('isAdmin', userInfo.isAdmin);
+                let isAdmin = false;
+
+                if ( email == 'jddiaz4@uc.cl' || email == 'psanabria@uc.cl' )
+                    isAdmin = true;
+
+                instance.parentInstance.set('isAdmin', isAdmin);
                 instance.parentInstance.set('userName', userInfo.name);
                 instance.parentInstance.set('userEmail', userInfo.email);
                 instance.parentInstance.set('projectName', info.projectName);
-                if (!userInfo.isAdmin) {
+
+                if (!isAdmin) {
                     instance.parentInstance.set('loading', true);
                     Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val_aux) => {
                         instance.parentInstance.set('recommendations1', val_aux.result1);

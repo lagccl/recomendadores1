@@ -1,14 +1,17 @@
-import {Meteor} from "meteor/meteor";
-import pg from "pg";
+import { Meteor } from "meteor/meteor";
 import log4js from "log4js";
 /*StopWords spanish - english version*/
 import {Spanish} from "../imports/startup/spanish.js";
 import {English} from "../imports/startup/english.js";
 /*Posts*/
-import {Posts} from "../imports/api/posts.js";
-import {Projects} from '../imports/api/projects';
+import { Posts } from "../imports/api/posts.js";
+import { Projects } from '../imports/api/projects';
+import { Tasks } from '../imports/api/tasks';
+import { SubTasks } from '../imports/api/subTasks';
+import { Commits } from '../imports/api/commits';
+
 /*Algorithms and libraries*/
-import {BM25} from "../imports/startup/bm25.js";
+import { BM25 } from "../imports/startup/bm25.js";
 import natural from "natural";
 import lda from "lda";
 import mokolo from "mokolo";
@@ -29,92 +32,45 @@ const BOTH_TYPE = '3';
 Meteor.methods({
     'utils.projects'(){
         let promise = new Promise((resolve) => {
-            resolve(Projects.find({_id: {$in: [134,135,136,137,138,185,187,189,191,193]}}));
-        });
-        return Promise.await(promise);
-    },
-
-    'utils.users'(words){
-        let client = new pg.Client(POSTGRES_CONNECT);
-        let promise = new Promise((resolve) => {
-            client.connect(function (error) {
-                if (error) throw error;
-                //We join tables tasks, subtasks and commits and create one document corpus by User
-                return client.query(
-                    'select task_users.user_id,CONCAT(users.email,\' \',users.name) as userinfo,' +
-                    'CONCAT(json_agg(DISTINCT CONCAT(tasks.name,\' \',' +
-                    'tasks.description)),\' \',' +
-                    'json_agg(commits.message) ,\' \',' +
-                    'json_agg(sub_tasks.name)) as texto ' +
-                    'from task_users ' +
-                    'left join users on task_users.user_id = users.id ' +
-                    'left join tasks on task_users.task_id = tasks.id ' +
-                    'left join sub_tasks on tasks.id = sub_tasks.task_id ' +
-                    'left join commits on tasks.id   = commits.task_id ' +
-                    'where task_users.user_id is not null ' +
-                    'group by task_users.user_id,users.email,users.name',
-                    [],
-                    function (error, result) {
-                        if (error) throw error;
-                        let tfidf = new TfIdf();
-                        for (var i = 0; i <= result.rows.length - 1; i++) {
-                            //We delete accents, special characters and numbers
-                            let document = cleanInformation(result.rows[i].texto);
-                            tfidf.addDocument(document, result.rows[i].user_id);
-                        }
-                        let response = [];
-                        //TF-IDF according to relevant words received in this method
-                        tfidf.tfidfs(words, function (i, measure) {
-                            response.push({user: result.rows[i].userinfo, tfidf: measure});
-                        });
-                        //TOP-5 ranking
-                        response = response.sort((a, b) => b.tfidf - a.tfidf).slice(0, 5);
-                        resolve(response);
-                    }
-                );
-            });
+            resolve(Projects.find({_id: {$in: [134,135,136,137,138,185,187,189,191,193]}}).fetch());
         });
         return Promise.await(promise);
     },
 
     'utils.recommendations'(id, method, uselda = false, mf = false){
         let start = clock();
-        let client = new pg.Client(POSTGRES_CONNECT);
         let promise = new Promise((resolve) => {
-            client.connect(function (error) {
-                if (error) throw error;
-                let query = '';
-                let params = [];
-                if (uselda) {
-                    query = 'where tasks.project_id=$1 ';
-                    params = [id];
-                }
-                //We join tables tasks, subtasks and commits and create one document corpus by Project
-                return client.query(
-                    'select tasks.project_id,' +
-                    'CONCAT(json_agg(DISTINCT CONCAT(tasks.name,\' \',' +
-                    'tasks.description)),\' \',' +
-                    'json_agg(sub_tasks.name),\' \',' +
-                    'json_agg(commits.message)) as texto ' +
-                    'from tasks ' +
-                    'left join sub_tasks on tasks.id = sub_tasks.task_id ' +
-                    'left join commits on tasks.id   = commits.task_id ' +
-                    query +
-                    'group by tasks.project_id ' +
-                    'order by tasks.project_id',
-                    params,
-                    function (error, result) {
-                        if (error) throw error;
-                        let words;
-                        if (uselda) {
-                            words = ldaWords(result.rows[0].texto);
-                        } else {
-                            words = tfidfWords(result, id);
-                        }
-                        resolve(words);
-                    }
-                );
+            let query = '';
+            if (uselda) {
+                query = {_id: id};
+            } else {
+                query = {};
+            }
+            let response = [];
+            Projects.find(query).forEach((project) => {
+                let row = {
+                    id: project._id,
+                    text: ""
+                };
+
+                Tasks.find({project_id: project._id}).forEach((task) => {
+                   row.text = [row.text, task.name, task.description].join(" ");
+                   SubTasks.find({task_id: task._id}).forEach((subTask) => {
+                       row.text = [row.text, subTask.name, subTask.description].join(" ");
+                   });
+                   Commits.find({task_id: task._id}).forEach((commit) => {
+                       row.text = [row.text, commit.message].join(" ");
+                   });
+                });
+                logger.info("Tasks: Text length" + row.text.length);
+                response.push(row);
             });
+            if (uselda) {
+                words = ldaWords(response[0].text);
+            } else {
+                words = tfidfWords(response, id);
+            }
+            resolve(words);
         });
 
         let promise2;
@@ -129,7 +85,6 @@ Meteor.methods({
                 promise2 = tfidfandBm25Method(promise, mf);
                 break;
         }
-        ;
         Promise.await(promise);
         let result = Promise.await(promise2);
         let duration = clock(start);
@@ -226,13 +181,13 @@ function tfidfMethod(promise, useMf) {
 function tfidfWords(result, id) {
     tfidf = new TfIdf();
     let j;
-    for (var i = 0; i <= result.rows.length - 1; i++) {
+    for (var i = 0; i <= result.length - 1; i++) {
         //To identify index of active project.
-        if (result.rows[i].project_id == id) {
+        if (result[i].project_id == id) {
             j = i;
         }
-        let document = cleanInformation(result.rows[i].texto);
-        tfidf.addDocument(document, result.rows[i].project_id);
+        let document = cleanInformation(result[i].text);
+        tfidf.addDocument(document, result[i].project_id);
     }
     let words = [];
     //Internally, this function tokenize document (j) and

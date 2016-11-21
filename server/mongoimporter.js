@@ -1,6 +1,9 @@
 import {Meteor} from "meteor/meteor";
 import jsonFile from "jsonfile";
 import { Projects } from '../imports/api/projects';
+import { Tasks } from '../imports/api/tasks';
+import { SubTasks } from '../imports/api/subTasks';
+import { Commits } from '../imports/api/commits';
 
 
 export function importData() {
@@ -25,10 +28,38 @@ export function importData() {
         user.name = element["name"];
         Users.insert(user);
     }));
-    insertCollection("projects");
-    insertCollection("sub_tasks");
-    insertCollection("tasks");
-    insertCollection("commits");
+    insertCollection("projects", Meteor.bindEnvironment((element) => {
+        let project = JSON.parse(JSON.stringify(element));
+
+        project._id = element["id"].toString();
+        delete project["id"];
+
+        Projects.insert(project);
+    }));
+    insertCollection("tasks", Meteor.bindEnvironment((element) => {
+        let task = JSON.parse(JSON.stringify(element));
+
+        task._id = element["id"].toString();
+        delete task["id"];
+
+        Tasks.insert(task);
+    }));
+    insertCollection("sub_tasks", Meteor.bindEnvironment((element) => {
+        let subTask = JSON.parse(JSON.stringify(element));
+
+        subTask._id = element["id"].toString();
+        delete subTask["id"];
+
+        SubTasks.insert(subTask);
+    }));
+    insertCollection("commits", Meteor.bindEnvironment((element) => {
+        let commit = JSON.parse(JSON.stringify(element));
+
+        commit._id = element["id"].toString();
+        delete commit["id"];
+
+        Commits.insert(commit);
+    }));
 }
 
 function insertCollection(name, process) {
@@ -42,19 +73,7 @@ function insertCollection(name, process) {
             return;
         }
         obj.forEach((element) => {
-            if (process != null) {
-                process(element);
-            } else {
-                process = Meteor.bindEnvironment((element) => {
-                    let project = JSON.parse(JSON.stringify(element));
-
-                    project._id = element["id"].toString();
-                    delete project["id"];
-
-                    Projects.insert(project);
-                });
-                process(element);
-            }
+            process(element);
         });
     });
 }
