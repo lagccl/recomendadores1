@@ -66,8 +66,8 @@ Meteor.methods({
                 });
                 response.push(row);
             });
-            //Loader.update({name:'uno'},{$set:{percentage:30,description:'Construyendo perfil del proyecto.'}});
             if (uselda) {
+                //console.log(response[0].text);
                 words = ldaWords(response[0].text);
             } else {
                 words = tfidfWords(response, id);
@@ -100,22 +100,29 @@ function tfidfandBm25Method(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
 
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
-            let responseAux1 = tfidfAlgorithm(words, useMf);
-            let responseAux2 = bm25Algorithm(words, useMf);
+
+          let bm = new BM25;
+          tfidf  = new TfIdf();
+          Loader.update({name:'uno'},{$set:{percentage:50,description:'Calculando TF-IDF en documentos.'}});
+          //let postsAux = Posts.rawCollection().aggregate([ { $sample: { size: 30 } } ]);
+          //let postsAux = Posts.find({}, {limit:3000,sort:{created_at:-1}}).fetch();
+          //console.log(postsAux.length);
+          Posts.find({}, {limit:4000,sort:{created_at:-1}}).forEach((post) => {
+              let tokens = cleanInformation(post.title + ' ' + post.text);
+              bm.addDocument({id: post._id, tokens: tokens});
+              tfidf.addDocument(tokens, post._id, true);
+          });
+
+            let responseAux1 = tfidfAlgorithm(words, tfidf, useMf);
+            let responseAux2 = bm25Algorithm(words, bm, useMf);
             resolve2({result1: responseAux1, result2: responseAux2, words: words});
         }));
     });
     return promise2;
 }
 
-function bm25Algorithm(words, useMf) {
+function bm25Algorithm(words,bm, useMf) {
     Loader.update({name:'uno'},{$set:{percentage:80,description:'Procesando recomendaciones BM25.'}});
-    var bm = new BM25;
-    let postsAux = Posts.find({}, {}).fetch();
-    postsAux.forEach(function (post) {
-        let document = cleanInformation(post.title + ' ' + post.text, false);
-        bm.addDocument({id: post._id, body: document});
-    });
     bm.updateIdf();
     var response = bm.search(words.join(' '));
     response = response.sort((a, b) => b._score - a._score).slice(0, 5);
@@ -126,17 +133,7 @@ function bm25Algorithm(words, useMf) {
     return responseAux;
 }
 
-function tfidfAlgorithm(words, useMf) {
-    Loader.update({name:'uno'},{$set:{percentage:50,description:'Calculando TF-IDF en documentos.'}});
-    tfidf = new TfIdf();
-    //limit: 20
-    let postsAux = Posts.find({}, {}).fetch();
-
-    postsAux.forEach(function (post) {
-        let document = cleanInformation(post.title + ' ' + post.text);
-        tfidf.addDocument(document, post._id, true);
-    });
-
+function tfidfAlgorithm(words,tfidf, useMf) {
     let response = [];
     let mergedTerms = null;
     let termsMatrix = null;
@@ -165,8 +162,14 @@ function tfidfAlgorithm(words, useMf) {
 function bm25Method(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
-            let responseAux = bm25Algorithm(words, useMf);
-            resolve2({result1: responseAux, result2: null, words: words});
+          let bm = new BM25;
+          let postsAux = Posts.find({}, {limit:1000}).fetch();
+          postsAux.forEach(function (post) {
+              let tokens = cleanInformation(post.title + ' ' + post.text);
+              bm.addDocument({id: post._id, tokens: tokens});
+          });
+          let responseAux = bm25Algorithm(words,bm, useMf);
+          resolve2({result1: responseAux, result2: null, words: words});
         }));
     });
     return promise2;
@@ -175,7 +178,13 @@ function bm25Method(promise, useMf) {
 function tfidfMethod(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
-            let responseAux = tfidfAlgorithm(words, useMf);
+          tfidf = new TfIdf();
+          let postsAux = Posts.find({}, {limit:1000}).fetch();
+          postsAux.forEach(function (post) {
+              let tokens = cleanInformation(post.title + ' ' + post.text);
+              tfidf.addDocument(document, post._id, true);
+          });
+            let responseAux = tfidfAlgorithm(words,tfidf, useMf);
             resolve2({result1: responseAux, result2: null, words: words});
         }));
     });
@@ -398,7 +407,10 @@ function translate(document) {
         .replace(new RegExp('\\b(modulo|modulos)\\b', 'g'), 'module')
         .replace(new RegExp('\\b(grupo|grupos)\\b', 'g'), 'group')
         .replace(new RegExp('\\b(nota|notas)\\b', 'g'), 'grade')
+        .replace(new RegExp('\\b(listo)\\b', 'g'), 'done')
         .replace(new RegExp('\\b(naturaleza|naturalezas)\\b', 'g'), 'nature')
+        .replace(new RegExp('\\b(anuncio|anuncios)\\b', 'g'), 'announcement')
+        .replace(new RegExp('\\b(asistente|asistentes)\\b', 'g'), 'assistant')
         .replace(new RegExp('\\b(basico|basicos)\\b', 'g'), 'basic');
 }
 

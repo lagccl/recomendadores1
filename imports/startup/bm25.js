@@ -34,74 +34,7 @@ export const BM25 = function () {
  // Release 2 (substantially revised) by Christopher McKenzie, Aug 2009
  */
 
-var stemmer = function () {
-    var e = {
-        ational: "ate",
-        tional: "tion",
-        enci: "ence",
-        anci: "ance",
-        izer: "ize",
-        bli: "ble",
-        alli: "al",
-        entli: "ent",
-        eli: "e",
-        ousli: "ous",
-        ization: "ize",
-        ation: "ate",
-        ator: "ate",
-        alism: "al",
-        iveness: "ive",
-        fulness: "ful",
-        ousness: "ous",
-        aliti: "al",
-        iviti: "ive",
-        biliti: "ble",
-        logi: "log"
-    }, i = {
-        icate: "ic",
-        ative: "",
-        alize: "al",
-        iciti: "ic",
-        ical: "ic",
-        ful: "",
-        ness: ""
-    }, t = "[^aeiou]", s = "[aeiouy]", a = t + "[^aeiouy]*", l = s + "[aeiou]*", n = "^(" + a + ")?" + l + a, o = "^(" + a + ")?" + l + a + "(" + l + ")?$", c = "^(" + a + ")?" + l + a + l + a, r = "^(" + a + ")?" + s;
-    return function (t) {
-        var l, u, x, $, p, v, g;
-        if (t.length < 3)return t;
-        if (x = t.substr(0, 1), "y" == x && (t = x.toUpperCase() + t.substr(1)), $ = /^(.+?)(ss|i)es$/, p = /^(.+?)([^s])s$/, $.test(t) ? t = t.replace($, "$1$2") : p.test(t) && (t = t.replace(p, "$1$2")), $ = /^(.+?)eed$/, p = /^(.+?)(ed|ing)$/, $.test(t)) {
-            var f = $.exec(t);
-            $ = new RegExp(n), $.test(f[1]) && ($ = /.$/, t = t.replace($, ""))
-        } else if (p.test(t)) {
-            var f = p.exec(t);
-            l = f[1], p = new RegExp(r), p.test(l) && (t = l, p = /(at|bl|iz)$/, v = new RegExp("([^aeiouylsz])\\1$"), g = new RegExp("^" + a + s + "[^aeiouwxy]$"), p.test(t) ? t += "e" : v.test(t) ? ($ = /.$/, t = t.replace($, "")) : g.test(t) && (t += "e"))
-        }
-        if ($ = /^(.+?)y$/, $.test(t)) {
-            var f = $.exec(t);
-            l = f[1], $ = new RegExp(r), $.test(l) && (t = l + "i")
-        }
-        if ($ = /^(.+?)(ational|tional|enci|anci|izer|bli|alli|entli|eli|ousli|ization|ation|ator|alism|iveness|fulness|ousness|aliti|iviti|biliti|logi)$/, $.test(t)) {
-            var f = $.exec(t);
-            l = f[1], u = f[2], $ = new RegExp(n), $.test(l) && (t = l + e[u])
-        }
-        if ($ = /^(.+?)(icate|ative|alize|iciti|ical|ful|ness)$/, $.test(t)) {
-            var f = $.exec(t);
-            l = f[1], u = f[2], $ = new RegExp(n), $.test(l) && (t = l + i[u])
-        }
-        if ($ = /^(.+?)(al|ance|ence|er|ic|able|ible|ant|ement|ment|ent|ou|ism|ate|iti|ous|ive|ize)$/, p = /^(.+?)(s|t)(ion)$/, $.test(t)) {
-            var f = $.exec(t);
-            l = f[1], $ = new RegExp(c), $.test(l) && (t = l)
-        } else if (p.test(t)) {
-            var f = p.exec(t);
-            l = f[1] + f[2], p = new RegExp(c), p.test(l) && (t = l)
-        }
-        if ($ = /^(.+?)e$/, $.test(t)) {
-            var f = $.exec(t);
-            l = f[1], $ = new RegExp(c), p = new RegExp(o), v = new RegExp("^" + a + s + "[^aeiouwxy]$"), ($.test(l) || p.test(l) && !v.test(l)) && (t = l)
-        }
-        return $ = /ll$/, p = new RegExp(c), $.test(t) && p.test(t) && ($ = /.$/, t = t.replace($, "")), "y" == x && (t = x.toLowerCase() + t.substr(1)), t
-    }
-}();
+var stemmer=function(){var e={ational:"ate",tional:"tion",enci:"ence",anci:"ance",izer:"ize",bli:"ble",alli:"al",entli:"ent",eli:"e",ousli:"ous",ization:"ize",ation:"ate",ator:"ate",alism:"al",iveness:"ive",fulness:"ful",ousness:"ous",aliti:"al",iviti:"ive",biliti:"ble",logi:"log"},i={icate:"ic",ative:"",alize:"al",iciti:"ic",ical:"ic",ful:"",ness:""},t="[^aeiou]",s="[aeiouy]",a=t+"[^aeiouy]*",l=s+"[aeiou]*",n="^("+a+")?"+l+a,o="^("+a+")?"+l+a+"("+l+")?$",c="^("+a+")?"+l+a+l+a,r="^("+a+")?"+s;return function(t){var l,u,x,$,p,v,g;if(t.length<3)return t;if(x=t.substr(0,1),"y"==x&&(t=x.toUpperCase()+t.substr(1)),$=/^(.+?)(ss|i)es$/,p=/^(.+?)([^s])s$/,$.test(t)?t=t.replace($,"$1$2"):p.test(t)&&(t=t.replace(p,"$1$2")),$=/^(.+?)eed$/,p=/^(.+?)(ed|ing)$/,$.test(t)){var f=$.exec(t);$=new RegExp(n),$.test(f[1])&&($=/.$/,t=t.replace($,""))}else if(p.test(t)){var f=p.exec(t);l=f[1],p=new RegExp(r),p.test(l)&&(t=l,p=/(at|bl|iz)$/,v=new RegExp("([^aeiouylsz])\\1$"),g=new RegExp("^"+a+s+"[^aeiouwxy]$"),p.test(t)?t+="e":v.test(t)?($=/.$/,t=t.replace($,"")):g.test(t)&&(t+="e"))}if($=/^(.+?)y$/,$.test(t)){var f=$.exec(t);l=f[1],$=new RegExp(r),$.test(l)&&(t=l+"i")}if($=/^(.+?)(ational|tional|enci|anci|izer|bli|alli|entli|eli|ousli|ization|ation|ator|alism|iveness|fulness|ousness|aliti|iviti|biliti|logi)$/,$.test(t)){var f=$.exec(t);l=f[1],u=f[2],$=new RegExp(n),$.test(l)&&(t=l+e[u])}if($=/^(.+?)(icate|ative|alize|iciti|ical|ful|ness)$/,$.test(t)){var f=$.exec(t);l=f[1],u=f[2],$=new RegExp(n),$.test(l)&&(t=l+i[u])}if($=/^(.+?)(al|ance|ence|er|ic|able|ible|ant|ement|ment|ent|ou|ism|ate|iti|ous|ive|ize)$/,p=/^(.+?)(s|t)(ion)$/,$.test(t)){var f=$.exec(t);l=f[1],$=new RegExp(c),$.test(l)&&(t=l)}else if(p.test(t)){var f=p.exec(t);l=f[1]+f[2],p=new RegExp(c),p.test(l)&&(t=l)}if($=/^(.+?)e$/,$.test(t)){var f=$.exec(t);l=f[1],$=new RegExp(c),p=new RegExp(o),v=new RegExp("^"+a+s+"[^aeiouwxy]$"),($.test(l)||p.test(l)&&!v.test(l))&&(t=l)}return $=/ll$/,p=new RegExp(c),$.test(t)&&p.test(t)&&($=/.$/,t=t.replace($,"")),"y"==x&&(t=x.toLowerCase()+t.substr(1)),t}}();
 
 /**
  * Stopwords list taken from http://www.ranks.nl/stopwords
@@ -113,16 +46,14 @@ var stopStems = stopwords.map(stemmer);
 
 // Static methods.
 
-BM25.Tokenize = function (text) {
+BM25.Tokenize = function(text) {
     text = text
         .toLowerCase()
         .replace(/\W/g, ' ')
         .replace(/\s+/g, ' ')
         .trim()
         .split(' ')
-        .map(function (a) {
-            return stemmer(a);
-        });
+        .map(function(a) { return stemmer(a); });
 
     // Filter out stopStems
     var out = [];
@@ -141,27 +72,21 @@ BM25.Tokenize = function (text) {
  * @param doc Object Expects this parameter to have an id and body properties.
  */
 
-BM25.prototype.addDocument = function (doc) {
-    if (typeof doc.id === 'undefined') {
-        throw new Error(1000, 'ID is a required property of documents.');
-    }
-    ;
-    if (typeof doc.body === 'undefined') {
-        throw new Error(1001, 'Body is a required property of documents.');
-    }
-    ;
+BM25.prototype.addDocument = function(doc) {
+    if (typeof doc.id === 'undefined') { throw new Error(1000, 'ID is a required property of documents.'); };
+    //if (typeof doc.body === 'undefined') { throw new Error(1001, 'Body is a required property of documents.'); };
 
     // Raw tokenized list of words
-    var tokens = BM25.Tokenize(doc.body);
+    //var tokens = BM25.Tokenize(doc.body);
 
     // Will hold unique terms and their counts and frequencies
     var _terms = {};
 
     // docObj will eventually be added to the documents database
-    var docObj = {id: doc.id, tokens: tokens, body: doc.body};
+    var docObj = {id: doc.id, tokens: doc.tokens};//, body: doc.body};
 
     // Count number of terms
-    docObj.termCount = tokens.length;
+    docObj.termCount = doc.tokens.length;
 
     // Increment totalDocuments
     this.totalDocuments++;
@@ -172,15 +97,14 @@ BM25.prototype.addDocument = function (doc) {
 
     // Calculate term frequency
     // First get terms count
-    for (var i = 0, len = tokens.length; i < len; i++) {
-        var term = tokens[i];
+    for (var i = 0, len = doc.tokens.length; i < len; i++) {
+        var term = doc.tokens[i];
         if (!_terms[term]) {
             _terms[term] = {
                 count: 0,
                 freq: 0
             };
-        }
-        ;
+        };
         _terms[term].count++;
     }
 
@@ -201,8 +125,7 @@ BM25.prototype.addDocument = function (doc) {
         }
 
         this.terms[term].n++;
-    }
-    ;
+    };
 
     // Calculate inverse document frequencies
     // this.updateIdf();
@@ -212,7 +135,7 @@ BM25.prototype.addDocument = function (doc) {
     this.documents[docObj.id] = docObj;
 };
 
-BM25.prototype.updateIdf = function () {
+BM25.prototype.updateIdf = function() {
     var keys = Object.keys(this.terms);
     for (var i = 0, len = keys.length; i < len; i++) {
         var term = keys[i];
@@ -222,7 +145,7 @@ BM25.prototype.updateIdf = function () {
     }
 };
 
-BM25.prototype.search = function (query) {
+BM25.prototype.search = function(query) {
 
     var queryTerms = BM25.Tokenize(query);
     var results = [];
@@ -272,8 +195,6 @@ BM25.prototype.search = function (query) {
         }
     }
 
-    results.sort(function (a, b) {
-        return b._score - a._score;
-    });
+    results.sort(function(a, b) { return b._score - a._score; });
     return results.slice(0, 10);
 };

@@ -34,7 +34,7 @@ export function readStackExchangeXML(file) {
 
     xml.on('end', Meteor.bindEnvironment(() => {
         console.log("End parsing XML");
-        processTfIdf();
+        //processTfIdf();
     }));
 }
 

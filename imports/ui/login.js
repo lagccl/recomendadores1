@@ -35,34 +35,38 @@ function loginWith(email, pwd, instance) {
                 let userInfo = Meteor.user();
                 //let userInfo = Meteor.users.findOne({'_id': user._id});
                 let info = UserProject[email];
-                let id = info.id;
-                let technique = info.technique;
-                let lda = info.lda;
-                let mf = info.mf;
-                let isAdmin = false;
+                if(info) {
+                  let id = info.id;
+                  let technique = info.technique;
+                  let lda = info.lda;
+                  let mf = info.mf;
+                  let isAdmin = false;
 
-                if ( email == 'jddiaz41@uc.cl' || email == 'psanabria@uc.cl' )
-                    isAdmin = true;
+                  if ( email == 'jddiaz41@uc.cl' || email == 'psanabria@uc.cl' )
+                      isAdmin = true;
 
-                instance.parentInstance.set('isAdmin', isAdmin);
-                instance.parentInstance.set('userName', email);//userInfo.email);
-                instance.parentInstance.set('userEmail', email);//userInfo.email);
-                instance.parentInstance.set('projectName', info.name);
+                  instance.parentInstance.set('isAdmin', isAdmin);
+                  instance.parentInstance.set('userName', info.username);
+                  instance.parentInstance.set('userEmail', email);
+                  instance.parentInstance.set('projectName', info.name);
 
-                if (!isAdmin) {
-                    instance.parentInstance.set('loading', true);
-                    Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val_aux) => {
-                      console.log(val_aux);
-                        instance.parentInstance.set('recommendations1', val_aux.result1);
-                        if (val_aux.result2) {
-                            instance.parentInstance.set('recommendations2', val_aux.result2);
-                        }
-                        instance.parentInstance.set('words', val_aux.words);
-                        instance.parentInstance.set('count', val_aux.result ? val_aux.result.length : 0);
-                        //Session.set('datos',val);
-                        instance.parentInstance.set('loading', false);
-                    });
-                }
+                  if (!isAdmin) {
+                      instance.parentInstance.set('loading', true);
+                      Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val_aux) => {
+                          instance.parentInstance.set('recommendations1', val_aux.result1);
+                          if (val_aux.result2) {
+                              instance.parentInstance.set('recommendations2', val_aux.result2);
+                          }
+                          instance.parentInstance.set('words', val_aux.words);
+                          instance.parentInstance.set('count', val_aux.result ? val_aux.result.length : 0);
+                          //Session.set('datos',val);
+                          instance.parentInstance.set('loading', false);
+                      });
+                  }
+              }else{
+                alert('Lo sentimos, no se encuentra habilitado para usar esta herramienta.');
+                error = true;
+              }
             } else {
                 alert(error)
             }
