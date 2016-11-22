@@ -31,6 +31,9 @@ const BM25_TYPE  = '2';
 const BOTH_TYPE  = '3';
 
 Meteor.methods({
+    'utils.keepalive'(){
+      console.log('you are alive');
+    },
     'utils.projects'(){
         let promise = new Promise((resolve) => {
             resolve(Projects.find({_id: {$in: [134,135,136,137,138,185,187,189,191,193]}}).fetch());
@@ -103,14 +106,18 @@ function tfidfandBm25Method(promise, useMf) {
 
           let bm = new BM25;
           tfidf  = new TfIdf();
-          Loader.update({name:'uno'},{$set:{percentage:50,description:'Calculando TF-IDF en documentos.'}});
+          Loader.update({name:'uno'},{$set:{percentage:50,description:'Iniciando proceso de recomendación.'}});
           //let postsAux = Posts.rawCollection().aggregate([ { $sample: { size: 30 } } ]);
           //let postsAux = Posts.find({}, {limit:3000,sort:{created_at:-1}}).fetch();
           //console.log(postsAux.length);
-          Posts.find({}, {limit:4000,sort:{created_at:-1}}).forEach((post) => {
+          let i = 0;
+          Posts.find({}, {limit:5000,sort:{created_at:-1}}).forEach((post) => {
               let tokens = cleanInformation(post.title + ' ' + post.text);
               bm.addDocument({id: post._id, tokens: tokens});
               tfidf.addDocument(tokens, post._id, true);
+              let percentage = (i / 5000.0) * 100;
+              Loader.update({name:'uno'},{$set:{percentage:50,description:'Calculado el ' + percentage + '%.'}});
+              i++;
           });
 
             let responseAux1 = tfidfAlgorithm(words, tfidf, useMf);
