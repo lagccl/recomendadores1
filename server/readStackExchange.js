@@ -4,36 +4,38 @@ import {TfIdf} from "natural";
 import htmlToText from "html-to-text";
 import fs from "fs";
 import {Posts} from "../imports/api/posts";
+let http = require('http');
 
 export function readStackExchangeXML(file) {
-    let path = Assets.absoluteFilePath(file);
-    let stream = fs.createReadStream(path);
-    let xml = new XmlStream(stream);
+    var request = http.get('http://iknow.esy.es/Posts.xml').on('response', Meteor.bindEnvironment((response) => {
+        response.setEncoding('utf8');
+        let xml = new XmlStream(response);
+        console.log('okkk');
+        xml.on('endElement: row', Meteor.bindEnvironment((item) => {
+          if (item['$']['PostTypeId'] == "1") {
+              let post = {};
+              console.log(item);
+              post._id = item['$']['Id'];
+              post.created_at = new Date(item['$']['CreationDate']);
+              post.title = item['$']['Title'];
+              post.text = item['$']['Body'];
+              post.origin = Posts.stackExchange;
+              post.text = htmlToText.fromString(item['$']['Body'], {
+                  wordwrap: 130
+              });
 
-    xml.on('endElement: row', Meteor.bindEnvironment((item) => {
-        if (item['$']['PostTypeId'] == "1") {
-            let post = {};
+              if (Posts.findOne({_id: post.id}) != null) {
+                  Posts.update({_id: post.id}, post);
+              } else {
+                  Posts.insert(post);
+              }
+          }
+      }));
 
-            post._id = item['$']['Id'];
-            post.created_at = new Date(item['$']['CreationDate']);
-            post.title = item['$']['Title'];
-            post.text = item['$']['Body'];
-            post.origin = Posts.stackExchange;
-            post.text = htmlToText.fromString(item['$']['Body'], {
-                wordwrap: 130
-            });
-
-            if (Posts.findOne({_id: post.id}) != null) {
-                Posts.update({_id: post.id}, post);
-            } else {
-                Posts.insert(post);
-            }
-        }
-    }));
-
-    xml.on('end', Meteor.bindEnvironment(() => {
-        console.log("End parsing XML");
-        processTfIdf();
+      xml.on('end', Meteor.bindEnvironment(() => {
+          console.log("End parsing XML");
+          processTfIdf();
+      }));
     }));
 }
 

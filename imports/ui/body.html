@@ -187,7 +187,12 @@
                                 {{#if isProcessing}}
                                     Hola <b>{{userName}}</b>, estamos cargando recomendaciones para el
                                     proyecto <b>{{projectName}}</b>, por favor espera unos segundos.
+                                    <!--<br>
+                                    Procesado: <h3><b>{{loader.percentage}}%</b></h3>-->
+                                    <br>
+                                    Acción: <b>{{loader.description}}</b>
                                     {{> spinner}}
+
                                 {{else}}
                                     {{#if words}}
                                         Recomendaciones ofrecidas por que encontramos las siguientes palabras

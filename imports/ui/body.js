@@ -2,6 +2,7 @@ import {Meteor} from "meteor/meteor";
 import {Template} from "meteor/templating";
 import {ReactiveDict} from "meteor/reactive-dict";
 import {Posts} from "../api/posts.js";
+import {Loader} from "../api/loader.js";
 import "./recommendation.js";
 import "./project.js";
 import "./word.js";
@@ -22,6 +23,10 @@ Template.body.onCreated(function bodyOnCreated() {
     this.state.set('recommendations1', null);
     this.state.set('recommendations2', null);
 
+    Meteor.call('loader.removeAll','uno');
+    Meteor.call('loader.insert','uno',0,'');
+
+    Meteor.subscribe('loader');
     Meteor.subscribe('ratings');
     Meteor.subscribe('posts');
     Meteor.subscribe('surveis');
@@ -79,7 +84,9 @@ Template.body.helpers({
     projects(){
         const instance = Template.instance();
         return instance.state.get('projects');
-        //return Session.get('datos');
+    },
+    loader(){
+        return Loader.findOne({name: 'uno'});
     },
     resources(){
         const instance = Template.instance();

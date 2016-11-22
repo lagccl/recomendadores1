@@ -14,11 +14,9 @@ Template.login.events({
     'submit form'(event) {
         event.preventDefault();
         const instance = Template.instance();
-        //let email = 'jddiaz4@uc.cl';
         let email = $("#login_email").val();
         let pwd = $("#login_pwd").val();
-        //let pwd = 'smart110889*';
-        loginWith(email, pwd, instance);
+        //loginWith(email, pwd, instance);
     }
 });
 
@@ -35,6 +33,7 @@ function loginWith(email, pwd, instance) {
 
             if (!error) {
                 let userInfo = Meteor.user();
+                //let userInfo = Meteor.users.findOne({'_id': user._id});
                 let info = UserProject[email];
                 let id = info.id;
                 let technique = info.technique;
@@ -42,17 +41,18 @@ function loginWith(email, pwd, instance) {
                 let mf = info.mf;
                 let isAdmin = false;
 
-                if ( email == 'jddiaz4@uc.cl' || email == 'psanabria@uc.cl' )
+                if ( email == 'jddiaz41@uc.cl' || email == 'psanabria@uc.cl' )
                     isAdmin = true;
 
                 instance.parentInstance.set('isAdmin', isAdmin);
-                instance.parentInstance.set('userName', userInfo.name);
-                instance.parentInstance.set('userEmail', userInfo.email);
-                instance.parentInstance.set('projectName', info.projectName);
+                instance.parentInstance.set('userName', email);//userInfo.email);
+                instance.parentInstance.set('userEmail', email);//userInfo.email);
+                instance.parentInstance.set('projectName', info.name);
 
                 if (!isAdmin) {
                     instance.parentInstance.set('loading', true);
                     Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val_aux) => {
+                      console.log(val_aux);
                         instance.parentInstance.set('recommendations1', val_aux.result1);
                         if (val_aux.result2) {
                             instance.parentInstance.set('recommendations2', val_aux.result2);

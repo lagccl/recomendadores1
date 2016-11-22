@@ -5,6 +5,7 @@ import {Spanish} from "../imports/startup/spanish.js";
 import {English} from "../imports/startup/english.js";
 /*Posts*/
 import { Posts } from "../imports/api/posts.js";
+import { Loader } from "../imports/api/loader.js";
 import { Projects } from '../imports/api/projects';
 import { Tasks } from '../imports/api/tasks';
 import { SubTasks } from '../imports/api/subTasks';
@@ -26,8 +27,8 @@ let extend = util._extend;
 
 /*Constants*/
 const TFIDF_TYPE = '1';
-const BM25_TYPE = '2';
-const BOTH_TYPE = '3';
+const BM25_TYPE  = '2';
+const BOTH_TYPE  = '3';
 
 Meteor.methods({
     'utils.projects'(){
@@ -39,6 +40,8 @@ Meteor.methods({
 
     'utils.recommendations'(id, method, uselda = false, mf = false){
         let start = clock();
+        Loader.update({name:'uno'},{$set:{percentage:15,description:'Extrayendo información de SmartBoard y '+
+        'construyendo perfil del proyecto.'}});
         let promise = new Promise((resolve) => {
             let query = '';
             if (uselda) {
@@ -52,19 +55,18 @@ Meteor.methods({
                     id: project._id,
                     text: ""
                 };
-
-                Tasks.find({project_id: project._id}).forEach((task) => {
+                Tasks.find({project_id: parseInt(project._id,10)}).forEach((task) => {
                    row.text = [row.text, task.name, task.description].join(" ");
-                   SubTasks.find({task_id: task._id}).forEach((subTask) => {
+                   SubTasks.find({task_id: parseInt(task._id,10)}).forEach((subTask) => {
                        row.text = [row.text, subTask.name, subTask.description].join(" ");
                    });
-                   Commits.find({task_id: task._id}).forEach((commit) => {
+                   Commits.find({task_id: parseInt(task._id)}).forEach((commit) => {
                        row.text = [row.text, commit.message].join(" ");
                    });
                 });
-                logger.info("Tasks: Text length" + row.text.length);
                 response.push(row);
             });
+            //Loader.update({name:'uno'},{$set:{percentage:30,description:'Construyendo perfil del proyecto.'}});
             if (uselda) {
                 words = ldaWords(response[0].text);
             } else {
@@ -107,6 +109,7 @@ function tfidfandBm25Method(promise, useMf) {
 }
 
 function bm25Algorithm(words, useMf) {
+    Loader.update({name:'uno'},{$set:{percentage:80,description:'Procesando recomendaciones BM25.'}});
     var bm = new BM25;
     let postsAux = Posts.find({}, {}).fetch();
     postsAux.forEach(function (post) {
@@ -124,6 +127,7 @@ function bm25Algorithm(words, useMf) {
 }
 
 function tfidfAlgorithm(words, useMf) {
+    Loader.update({name:'uno'},{$set:{percentage:50,description:'Calculando TF-IDF en documentos.'}});
     tfidf = new TfIdf();
     //limit: 20
     let postsAux = Posts.find({}, {}).fetch();
@@ -137,16 +141,15 @@ function tfidfAlgorithm(words, useMf) {
     let mergedTerms = null;
     let termsMatrix = null;
     if (useMf) {
+        Loader.update({name:'uno'},{$set:{percentage:60,description:'Ejecutando matrix factorization sobre matrix TF-IDF.'}});
         mergedTerms = [];
         for (let i = 0; i < tfidf.documents.length; i++) {
             let keys = Object.keys(tfidf.documents[i]);
             mergedTerms = extend(keys, mergedTerms);
         }
-        //console.log(mergedTerms);
         termsMatrix = getNMF(tfidf, mergedTerms);
     }
-
-
+    Loader.update({name:'uno'},{$set:{percentage:50,description:'Procesando similaridad en documentos contra perfil proyecto.'}});
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
         response.push({_id: id, tfidf: similarity});
     });
@@ -183,11 +186,11 @@ function tfidfWords(result, id) {
     let j;
     for (var i = 0; i <= result.length - 1; i++) {
         //To identify index of active project.
-        if (result[i].project_id == id) {
+        if (result[i].id == parseInt(id,10)) {
             j = i;
         }
         let document = cleanInformation(result[i].text);
-        tfidf.addDocument(document, result[i].project_id);
+        tfidf.addDocument(document, result[i].id);
     }
     let words = [];
     //Internally, this function tokenize document (j) and
@@ -206,10 +209,9 @@ function tfidfWords(result, id) {
 
 
 function ldaWords(document) {
-    document = cleanInformation(document, false);
+    document = cleanInformation(document, true);
     // Extract sentences.
-    document = document.match(/[^\.!\?]+[\.!\?]+/g);
-
+    //document = document.match(/[^\.!\?]+[\.!\?]+/g);
     // Run LDA to get terms for 2 topics (5 terms each).
     let result = lda(document, 10, 3, ['en']);
     let words = [];
@@ -376,6 +378,27 @@ function translate(document) {
         .replace(new RegExp('\\b(servidor)\\b', 'g'), 'server')
         .replace(new RegExp('\\b(negociacion)\\b', 'g'), 'negotiation')
         .replace(new RegExp('\\b(organizar)\\b', 'g'), 'organize')
+        .replace(new RegExp('\\b(requisito|requisitos)\\b', 'g'), 'requirement')
+        .replace(new RegExp('\\b(contenido)\\b', 'g'), 'content')
+        .replace(new RegExp('\\b(aplicacion|aplicaciones)\\b', 'g'), 'aplication')
+        .replace(new RegExp('\\b(implementar)\\b', 'g'), 'implement')
+        .replace(new RegExp('\\b(imagineria)\\b', 'g'), 'imagery')
+        .replace(new RegExp('\\b(configuracion)\\b', 'g'), 'configuration')
+        .replace(new RegExp('\\b(modelo)\\b', 'g'), 'model')
+        .replace(new RegExp('\\b(preparar)\\b', 'g'), 'prepare')
+        .replace(new RegExp('\\b(usuario|usuarios)\\b', 'g'), 'user')
+        .replace(new RegExp('\\b(estadistica|estadisticas)\\b', 'g'), 'statistics')
+        .replace(new RegExp('\\b(tabla|tablas)\\b', 'g'), 'table')
+        .replace(new RegExp('\\b(boton|botones)\\b', 'g'), 'button')
+        .replace(new RegExp('\\b(foro|foros)\\b', 'g'), 'forum')
+        .replace(new RegExp('\\b(evento|eventos)\\b', 'g'), 'event')
+        .replace(new RegExp('\\b(presentacion|presentaciones)\\b', 'g'), 'presentation')
+        .replace(new RegExp('\\b(imagen|imagenes)\\b', 'g'), 'image')
+        .replace(new RegExp('\\b(vendedor|vendedores)\\b', 'g'), 'seller')
+        .replace(new RegExp('\\b(modulo|modulos)\\b', 'g'), 'module')
+        .replace(new RegExp('\\b(grupo|grupos)\\b', 'g'), 'group')
+        .replace(new RegExp('\\b(nota|notas)\\b', 'g'), 'grade')
+        .replace(new RegExp('\\b(naturaleza|naturalezas)\\b', 'g'), 'nature')
         .replace(new RegExp('\\b(basico|basicos)\\b', 'g'), 'basic');
 }
 
@@ -387,6 +410,7 @@ function cleanInformation(document, tokenized = true) {
     document = document.toLowerCase()
         .replace(new RegExp('\\w(_)\\w', 'g'), ' ')
         .replace(/\d+/g, ' ')
+        .replace(new RegExp('\\b(\')\\b', 'g'), ' ')
         .replace(new RegExp('\\b(á)\\b', 'g'), 'a')
         .replace(new RegExp('\\b(é)\\b', 'g'), 'e')
         .replace(new RegExp('\\b(í)\\b', 'g'), 'i')

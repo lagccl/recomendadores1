@@ -72,6 +72,7 @@ function insertCollection(name, process) {
             done();
             return;
         }
+        console.log(name);
         obj.forEach((element) => {
             process(element);
         });
