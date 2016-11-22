@@ -1,18 +1,17 @@
-import { Meteor } from "meteor/meteor";
+import {Meteor} from "meteor/meteor";
 import log4js from "log4js";
 /*StopWords spanish - english version*/
 import {Spanish} from "../imports/startup/spanish.js";
 import {English} from "../imports/startup/english.js";
 /*Posts*/
-import { Posts } from "../imports/api/posts.js";
-import { Loader } from "../imports/api/loader.js";
-import { Projects } from '../imports/api/projects';
-import { Tasks } from '../imports/api/tasks';
-import { SubTasks } from '../imports/api/subTasks';
-import { Commits } from '../imports/api/commits';
-
+import {Posts} from "../imports/api/posts.js";
+import {Loader} from "../imports/api/loader.js";
+import {Projects} from "../imports/api/projects";
+import {Tasks} from "../imports/api/tasks";
+import {SubTasks} from "../imports/api/subTasks";
+import {Commits} from "../imports/api/commits";
 /*Algorithms and libraries*/
-import { BM25 } from "../imports/startup/bm25.js";
+import {BM25} from "../imports/startup/bm25.js";
 import natural from "natural";
 import lda from "lda";
 import mokolo from "mokolo";
@@ -27,24 +26,28 @@ let extend = util._extend;
 
 /*Constants*/
 const TFIDF_TYPE = '1';
-const BM25_TYPE  = '2';
-const BOTH_TYPE  = '3';
+const BM25_TYPE = '2';
+const BOTH_TYPE = '3';
 
 Meteor.methods({
     'utils.keepalive'(){
-      console.log('you are alive');
+        console.log('you are alive');
     },
     'utils.projects'(){
         let promise = new Promise((resolve) => {
-            resolve(Projects.find({_id: {$in: [134,135,136,137,138,185,187,189,191,193]}}).fetch());
+            resolve(Projects.find({_id: {$in: [134, 135, 136, 137, 138, 185, 187, 189, 191, 193]}}).fetch());
         });
         return Promise.await(promise);
     },
 
     'utils.recommendations'(id, method, uselda = false, mf = false){
         let start = clock();
-        Loader.update({name:'uno'},{$set:{percentage:15,description:'Extrayendo información de SmartBoard y '+
-        'construyendo perfil del proyecto.'}});
+        Loader.update({name: 'uno'}, {
+            $set: {
+                percentage: 15, description: 'Extrayendo información de SmartBoard y ' +
+                'construyendo perfil del proyecto.'
+            }
+        });
         let promise = new Promise((resolve) => {
             let query = '';
             if (uselda) {
@@ -58,14 +61,14 @@ Meteor.methods({
                     id: project._id,
                     text: ""
                 };
-                Tasks.find({project_id: parseInt(project._id,10)}).forEach((task) => {
-                   row.text = [row.text, task.name, task.description].join(" ");
-                   SubTasks.find({task_id: parseInt(task._id,10)}).forEach((subTask) => {
-                       row.text = [row.text, subTask.name, subTask.description].join(" ");
-                   });
-                   Commits.find({task_id: parseInt(task._id)}).forEach((commit) => {
-                       row.text = [row.text, commit.message].join(" ");
-                   });
+                Tasks.find({project_id: parseInt(project._id, 10)}).forEach((task) => {
+                    row.text = [row.text, task.name, task.description].join(" ");
+                    SubTasks.find({task_id: parseInt(task._id, 10)}).forEach((subTask) => {
+                        row.text = [row.text, subTask.name, subTask.description].join(" ");
+                    });
+                    Commits.find({task_id: parseInt(task._id)}).forEach((commit) => {
+                        row.text = [row.text, commit.message].join(" ");
+                    });
                 });
                 response.push(row);
             });
@@ -104,21 +107,27 @@ function tfidfandBm25Method(promise, useMf) {
 
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
 
-          let bm = new BM25;
-          tfidf  = new TfIdf();
-          Loader.update({name:'uno'},{$set:{percentage:50,description:'Iniciando proceso de recomendación.'}});
-          //let postsAux = Posts.rawCollection().aggregate([ { $sample: { size: 30 } } ]);
-          //let postsAux = Posts.find({}, {limit:3000,sort:{created_at:-1}}).fetch();
-          //console.log(postsAux.length);
-          let i = 0;
-          Posts.find({}, {limit:5000,sort:{created_at:-1}}).forEach((post) => {
-              let tokens = cleanInformation(post.title + ' ' + post.text);
-              bm.addDocument({id: post._id, tokens: tokens});
-              tfidf.addDocument(tokens, post._id, true);
-              let percentage = (i / 5000.0) * 100;
-              Loader.update({name:'uno'},{$set:{percentage:50,description:'Calculado el ' + percentage + '%.'}});
-              i++;
-          });
+            let bm = new BM25;
+            tfidf = new TfIdf();
+            Loader.update({name: 'uno'}, {$set: {percentage: 50, description: 'Iniciando proceso de recomendación.'}});
+            //let postsAux = Posts.rawCollection().aggregate([ { $sample: { size: 30 } } ]);
+            //let postsAux = Posts.find({}, {limit:3000,sort:{created_at:-1}}).fetch();
+            //console.log(postsAux.length);
+            let i = 0;
+            let limit = 3500;
+            Posts.find({}, {limit: limit, sort: {created_at: -1}}).forEach((post) => {
+                let tokens = cleanInformation(post.title + ' ' + post.text);
+                bm.addDocument({id: post._id, tokens: tokens});
+                tfidf.addDocument(tokens, post._id, true);
+                let percentage = (i * 100 / limit);
+                Loader.update({name: 'uno'}, {
+                    $set: {
+                        percentage: 50,
+                        description: 'Calculado el ' + percentage + '%.'
+                    }
+                });
+                i++;
+            });
 
             let responseAux1 = tfidfAlgorithm(words, tfidf, useMf);
             let responseAux2 = bm25Algorithm(words, bm, useMf);
@@ -128,8 +137,8 @@ function tfidfandBm25Method(promise, useMf) {
     return promise2;
 }
 
-function bm25Algorithm(words,bm, useMf) {
-    Loader.update({name:'uno'},{$set:{percentage:80,description:'Procesando recomendaciones BM25.'}});
+function bm25Algorithm(words, bm, useMf) {
+    Loader.update({name: 'uno'}, {$set: {percentage: 80, description: 'Procesando recomendaciones BM25.'}});
     bm.updateIdf();
     var response = bm.search(words.join(' '));
     response = response.sort((a, b) => b._score - a._score).slice(0, 5);
@@ -140,12 +149,17 @@ function bm25Algorithm(words,bm, useMf) {
     return responseAux;
 }
 
-function tfidfAlgorithm(words,tfidf, useMf) {
+function tfidfAlgorithm(words, tfidf, useMf) {
     let response = [];
     let mergedTerms = null;
     let termsMatrix = null;
     if (useMf) {
-        Loader.update({name:'uno'},{$set:{percentage:60,description:'Ejecutando matrix factorization sobre matrix TF-IDF.'}});
+        Loader.update({name: 'uno'}, {
+            $set: {
+                percentage: 60,
+                description: 'Ejecutando matrix factorization sobre matrix TF-IDF.'
+            }
+        });
         mergedTerms = [];
         for (let i = 0; i < tfidf.documents.length; i++) {
             let keys = Object.keys(tfidf.documents[i]);
@@ -153,7 +167,12 @@ function tfidfAlgorithm(words,tfidf, useMf) {
         }
         termsMatrix = getNMF(tfidf, mergedTerms);
     }
-    Loader.update({name:'uno'},{$set:{percentage:50,description:'Procesando similaridad en documentos contra perfil proyecto.'}});
+    Loader.update({name: 'uno'}, {
+        $set: {
+            percentage: 50,
+            description: 'Procesando similaridad en documentos contra perfil proyecto.'
+        }
+    });
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
         response.push({_id: id, tfidf: similarity});
     });
@@ -169,14 +188,14 @@ function tfidfAlgorithm(words,tfidf, useMf) {
 function bm25Method(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
-          let bm = new BM25;
-          let postsAux = Posts.find({}, {limit:1000}).fetch();
-          postsAux.forEach(function (post) {
-              let tokens = cleanInformation(post.title + ' ' + post.text);
-              bm.addDocument({id: post._id, tokens: tokens});
-          });
-          let responseAux = bm25Algorithm(words,bm, useMf);
-          resolve2({result1: responseAux, result2: null, words: words});
+            let bm = new BM25;
+            let postsAux = Posts.find({}, {limit: 1000}).fetch();
+            postsAux.forEach(function (post) {
+                let tokens = cleanInformation(post.title + ' ' + post.text);
+                bm.addDocument({id: post._id, tokens: tokens});
+            });
+            let responseAux = bm25Algorithm(words, bm, useMf);
+            resolve2({result1: responseAux, result2: null, words: words});
         }));
     });
     return promise2;
@@ -185,13 +204,13 @@ function bm25Method(promise, useMf) {
 function tfidfMethod(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
-          tfidf = new TfIdf();
-          let postsAux = Posts.find({}, {limit:1000}).fetch();
-          postsAux.forEach(function (post) {
-              let tokens = cleanInformation(post.title + ' ' + post.text);
-              tfidf.addDocument(document, post._id, true);
-          });
-            let responseAux = tfidfAlgorithm(words,tfidf, useMf);
+            tfidf = new TfIdf();
+            let postsAux = Posts.find({}, {limit: 1000}).fetch();
+            postsAux.forEach(function (post) {
+                let tokens = cleanInformation(post.title + ' ' + post.text);
+                tfidf.addDocument(document, post._id, true);
+            });
+            let responseAux = tfidfAlgorithm(words, tfidf, useMf);
             resolve2({result1: responseAux, result2: null, words: words});
         }));
     });
@@ -202,7 +221,7 @@ function tfidfWords(result, id) {
     let j;
     for (var i = 0; i <= result.length - 1; i++) {
         //To identify index of active project.
-        if (result[i].id == parseInt(id,10)) {
+        if (result[i].id == parseInt(id, 10)) {
             j = i;
         }
         let document = cleanInformation(result[i].text);
