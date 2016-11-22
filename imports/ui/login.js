@@ -16,7 +16,7 @@ Template.login.events({
         const instance = Template.instance();
         let email = $("#login_email").val();
         let pwd = $("#login_pwd").val();
-        //loginWith(email, pwd, instance);
+        loginWith(email, pwd, instance);
     }
 });
 
