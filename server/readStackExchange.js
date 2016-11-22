@@ -24,8 +24,8 @@ export function readStackExchangeXML(file) {
                 wordwrap: 130
             });
 
-            if (Posts.findOne({_id: post.id}) != null) {
-                Posts.update({_id: post.id}, post);
+            if (Posts.findOne({_id: post._id}) != null) {
+                Posts.update({_id: post._id}, post);
             } else {
                 Posts.insert(post);
             }
@@ -34,7 +34,7 @@ export function readStackExchangeXML(file) {
 
     xml.on('end', Meteor.bindEnvironment(() => {
         console.log("End parsing XML");
-        //processTfIdf();
+       // processTfIdf();
     }));
 }
 

@@ -66,15 +66,17 @@ function insertCollection(name, process) {
     let file = name + ".json";
     let path = Assets.absoluteFilePath(file);
 
+    console.log("Importing " + name);
+
     jsonFile.readFile(path, function (error, obj) {
         if (error != null) {
             console.log("error reading file ", error);
-            done();
             return;
         }
         console.log(name);
         obj.forEach((element) => {
             process(element);
         });
+        console.log("Finished importing " + name);
     });
 }
