@@ -49,8 +49,8 @@ Meteor.methods({
                 query = {_id: {$in: [134, 135, 136, 137, 138, 185, 187, 189, 191, 193]}};
             }
             let response = [];
-            let i = 1;
-            let limit = Projects.find(query).count();
+            //let i = 1;
+            //let limit = Projects.find(query).count();
             Projects.find(query).fetch().forEach((project) => {
                 let row = {
                     id: project._id,
@@ -65,13 +65,13 @@ Meteor.methods({
                         row.text = [row.text, commit.message].join(" ");
                     });
                 });
-                //if(i % 10 === 0)
-                //{
+                /*if(i % 10 === 0)
+                {
                   let percentage = (i * 100 / limit).toFixed(2);
                   setLoader(50,'Extrayendo información de SmartBoard y ' +
                   'construyendo perfil del proyecto: ' + percentage + '%.');
-                //}
-                i++;
+                }
+                i++;*/
                 response.push(row);
             });
             if (uselda) {
@@ -95,10 +95,10 @@ Meteor.methods({
                 break;
         }
         Promise.await(promise);
-        let result = Promise.await(promise2);
+        //let result = Promise.await(promise2);
         let duration = clock(start);
         logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
-        return result;
+        return promise2;
     }
 
 });
