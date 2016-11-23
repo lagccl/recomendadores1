@@ -29,6 +29,7 @@ let email;
 const TFIDF_TYPE = '1';
 const BM25_TYPE = '2';
 const BOTH_TYPE = '3';
+const POST_LIMIT = 3000;
 
 Meteor.methods({
     'utils.projects'(){
@@ -82,6 +83,7 @@ Meteor.methods({
             } else {
                 words = tfidfWords(response, id);
             }
+            tfidf = null;
             resolve(words);
         });
 
@@ -98,10 +100,10 @@ Meteor.methods({
                 break;
         }
         Promise.await(promise);
-        //let result = Promise.await(promise2);
+        let result = Promise.await(promise2);
         let duration = clock(start);
         logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
-        return promise2;
+        return result;
     }
 
 });
@@ -124,7 +126,6 @@ function tfidfandBm25Method(promise, useMf) {
             tfidf = new TfIdf();
             setLoader(50,'Iniciando proceso de recomendación.');
             let i = 1;
-            let limit = 3000;
             let postAux = Posts.find({}, {limit: limit, sort: {created_at: -1}}).fetch();
             postAux.forEach((post) => {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
@@ -132,7 +133,7 @@ function tfidfandBm25Method(promise, useMf) {
                 tfidf.addDocument(tokens, post._id, true);
                 if(i % 10 === 0)
                 {
-                  let percentage = (i * 100 / limit).toFixed(2);
+                  let percentage = (i * 100 / POST_LIMIT).toFixed(2);
                   setLoader(50,'Procesando StackExchange posts ' + percentage + '%.');
                 }
                 i++;
@@ -150,7 +151,19 @@ function tfidfandBm25Method(promise, useMf) {
 function bm25Algorithm(words, bm, useMf) {
     setLoader(80,'Procesando recomendaciones BM25.');
     bm.updateIdf();
-    var response = bm.search(words.join(' '));
+    let response = [];
+    let i = 0;
+    bm.search(words.join(' '),function(result){
+      if(i % 10 === 0)
+      {
+        let percentage = (i * 100 / POST_LIMIT).toFixed(2);
+        setLoader(50,'Procesando recomendaciones BM25 ' + percentage + '%.');
+      }
+      i++;
+      if(result) response.push(result);
+    });
+    //response = response.sort(function(a, b) { return b._score - a._score; });
+    //response = response.slice(0, 10);
     response = response.sort((a, b) => b._score - a._score).slice(0, 5);
     let responseAux = response.map(function (item) {
         let post = Posts.findOne({_id: item.id});
@@ -177,7 +190,7 @@ function tfidfAlgorithm(words, tfidf, useMf) {
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
       if(j % 10 === 0)
       {
-        let percentage = (j * 100 / 3000).toFixed(2);
+        let percentage = (j * 100 / POST_LIMIT).toFixed(2);
         setLoader(50,'Calculando similaridad ' + percentage + '%.');
       }
       j++;
@@ -444,6 +457,8 @@ function translate(document) {
         .replace(new RegExp('\\b(naturaleza|naturalezas)\\b', 'g'), 'nature')
         .replace(new RegExp('\\b(anuncio|anuncios)\\b', 'g'), 'announcement')
         .replace(new RegExp('\\b(asistente|asistentes)\\b', 'g'), 'assistant')
+        .replace(new RegExp('\\b(grafico|graficos)\\b', 'g'), 'chart')
+        .replace(new RegExp('\\b(lista|listas)\\b', 'g'), 'list')
         .replace(new RegExp('\\b(basico|basicos)\\b', 'g'), 'basic');
 }
 

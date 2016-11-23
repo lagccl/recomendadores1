@@ -145,10 +145,10 @@ BM25.prototype.updateIdf = function() {
     }
 };
 
-BM25.prototype.search = function(query) {
+BM25.prototype.search = function(query,callback) {
 
     var queryTerms = BM25.Tokenize(query);
-    var results = [];
+    //var results = [];
     // Look at each document in turn. There are better ways to do this with inverted indices.
     var keys = Object.keys(this.documents);
     for (var j = 0, nDocs = keys.length; j < nDocs; j++) {
@@ -191,10 +191,10 @@ BM25.prototype.search = function(query) {
         }
 
         if (!isNaN(this.documents[id]._score) && this.documents[id]._score > 0) {
-            results.push(this.documents[id]);
+            //results.push(this.documents[id]);
+            callback(this.documents[id]);
+        }else {
+          callback(null);
         }
     }
-
-    results.sort(function(a, b) { return b._score - a._score; });
-    return results.slice(0, 10);
 };
