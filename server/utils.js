@@ -49,24 +49,23 @@ Meteor.methods({
                 query = {};
             }
             let response = [];
-            Projects.find(query).forEach((project) => {
+            Projects.find(query).fetch().forEach((project) => {
                 let row = {
                     id: project._id,
                     text: ""
                 };
-                Tasks.find({project_id: parseInt(project._id, 10)}).forEach((task) => {
+                Tasks.find({project_id: parseInt(project._id, 10)}).fetch().forEach((task) => {
                     row.text = [row.text, task.name, task.description].join(" ");
-                    SubTasks.find({task_id: parseInt(task._id, 10)}).forEach((subTask) => {
+                    SubTasks.find({task_id: parseInt(task._id, 10)}).fetch().forEach((subTask) => {
                         row.text = [row.text, subTask.name, subTask.description].join(" ");
                     });
-                    Commits.find({task_id: parseInt(task._id)}).forEach((commit) => {
+                    Commits.find({task_id: parseInt(task._id)}).fetch().forEach((commit) => {
                         row.text = [row.text, commit.message].join(" ");
                     });
                 });
                 response.push(row);
             });
             if (uselda) {
-                //console.log(response[0].text);
                 words = ldaWords(response[0].text);
             } else {
                 words = tfidfWords(response, id);
@@ -87,10 +86,10 @@ Meteor.methods({
                 break;
         }
         Promise.await(promise);
-        let result = Promise.await(promise2);
+        //let result = Promise.await(promise2);
         let duration = clock(start);
         logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
-        return result;
+        return promise2;
     }
 
 });
@@ -113,17 +112,17 @@ function tfidfandBm25Method(promise, useMf) {
             let bm = new BM25;
             tfidf = new TfIdf();
             setLoader(50,'Iniciando proceso de recomendación.');
-            let i = 1;
-            let limit = 3500;
-            Posts.find({}, {limit: limit, sort: {created_at: -1}}).forEach((post) => {
+            let i = 0;
+            let limit = 5000;
+            let postAux = Posts.find({}, {limit: limit, sort: {created_at: -1}}).fetch();
+            postAux.forEach((post) => {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
                 tfidf.addDocument(tokens, post._id, true);
                 let percentage = (i * 100 / limit).toFixed(2);
-                setLoader(50,'Calculado el ' + percentage + '%.');
+                setLoader(50,'Procesando StackExchange posts ' + percentage + '%.');
                 i++;
             });
-
             let responseAux1 = tfidfAlgorithm(words, tfidf, useMf);
             let responseAux2 = bm25Algorithm(words, bm, useMf);
             resolve2({result1: responseAux1, result2: responseAux2, words: words});
@@ -157,8 +156,12 @@ function tfidfAlgorithm(words, tfidf, useMf) {
         }
         termsMatrix = getNMF(tfidf, mergedTerms);
     }
+    let j = 0;
     setLoader(50,'Procesando similaridad en documentos contra perfil proyecto.');
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
+      let percentage = (j * 100 / 5000).toFixed(2);
+      setLoader(50,'Calculando similaridad' + percentage + '%.');
+      j++;
         response.push({_id: id, tfidf: similarity});
     });
 

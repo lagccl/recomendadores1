@@ -6,6 +6,7 @@ import "./utils.js";
 import {importData} from "./mongoimporter";
 
 Meteor.startup(() => {
+  //process.env.DISABLE_WEBSOCKETS = 1;
     seed();
 });
 function seed() {
