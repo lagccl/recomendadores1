@@ -1,5 +1,5 @@
 export const UserProject = {
-    'jddiaz4@uc.cl': {id: '185', username:'Juan', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
+    'jddiaz4@uc.cl': {id: '185', username:'Juan', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
     'aneyem@uc.cl': {id: '187', username:'Andres', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
     'psanabria@uc.cl': {id: '191', username:'Pablo', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
 

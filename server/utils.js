@@ -46,7 +46,7 @@ Meteor.methods({
             if (uselda) {
                 query = {_id: id};
             } else {
-                query = {};
+                query = {_id: {$in: [134, 135, 136, 137, 138, 185, 187, 189, 191, 193]}};
             }
             let response = [];
             let i = 1;
