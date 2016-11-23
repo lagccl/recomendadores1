@@ -453,6 +453,7 @@ function translate(document) {
         .replace(new RegExp('\\b(modulo|modulos)\\b', 'g'), 'module')
         .replace(new RegExp('\\b(grupo|grupos)\\b', 'g'), 'group')
         .replace(new RegExp('\\b(nota|notas)\\b', 'g'), 'grade')
+        .replace(new RegExp('\\b(arreglos)\\b', 'g'), 'fix')
         .replace(new RegExp('\\b(listo)\\b', 'g'), 'done')
         .replace(new RegExp('\\b(naturaleza|naturalezas)\\b', 'g'), 'nature')
         .replace(new RegExp('\\b(anuncio|anuncios)\\b', 'g'), 'announcement')
