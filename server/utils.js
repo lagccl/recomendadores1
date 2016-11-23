@@ -113,11 +113,8 @@ function tfidfandBm25Method(promise, useMf) {
             let bm = new BM25;
             tfidf = new TfIdf();
             setLoader(50,'Iniciando proceso de recomendación.');
-            //let postsAux = Posts.rawCollection().aggregate([ { $sample: { size: 30 } } ]);
-            //let postsAux = Posts.find({}, {limit:3000,sort:{created_at:-1}}).fetch();
-            //console.log(postsAux.length);
             let i = 1;
-            let limit = 3000;
+            let limit = 3500;
             Posts.find({}, {limit: limit, sort: {created_at: -1}}).forEach((post) => {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});

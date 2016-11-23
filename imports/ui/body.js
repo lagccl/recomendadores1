@@ -1,7 +1,6 @@
 import {Meteor} from "meteor/meteor";
 import {Template} from "meteor/templating";
 import {ReactiveDict} from "meteor/reactive-dict";
-import {Posts} from "../api/posts.js";
 import {Loader} from "../api/loader.js";
 import "./recommendation.js";
 import "./project.js";
@@ -23,13 +22,11 @@ Template.body.onCreated(function bodyOnCreated() {
     this.state.set('recommendations1', null);
     this.state.set('recommendations2', null);
 
-    Meteor.subscribe('loader');
+    /*Meteor.subscribe('loader');
     Meteor.subscribe('ratings');
-    Meteor.subscribe('posts');
-    Meteor.subscribe('surveis');
+    Meteor.subscribe('surveis');*/
     Meteor.callPromise("utils.projects").then((val) => {
         this.state.set('projects', val);
-        //Session.set('datos',val);
     });
 });
 
@@ -89,12 +86,6 @@ Template.body.helpers({
     resources(){
         const instance = Template.instance();
         return instance.state.get('resources');
-    },
-    postsCount() {
-        return Posts.find().count();
-    },
-    posts() {
-        return Posts.find({}, {limit: 50});
     }
 });
 
@@ -141,7 +132,7 @@ Template.body.events({
         instance.state.set('loading', true);
         let technique = $("input[name='technique']:checked").val()
         let lda = $("#lda").is(':checked');
-        let mf = $("#mf").is(':checked');
+        let mf  = $("#mf").is(':checked');
         Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val) => {
             instance.state.set('recommendations1', val.result1);
             if (val.result2) {

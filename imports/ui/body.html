@@ -108,8 +108,7 @@
                                     <li role="presentation" class="active"><a href="#projects" aria-controls="projects"
                                                                               role="tab" data-toggle="tab">Recomendaciones</a>
                                     </li>
-                                    <!--<li role="presentation"><a href="#users" aria-controls="users" role="tab" data-toggle="tab">Users</a></li>
-                                    <li role="presentation"><a href="#posts" aria-controls="posts" role="tab" data-toggle="tab">Posts</a></li>-->
+                                    <!--<li role="presentation"><a href="#users" aria-controls="users" role="tab" data-toggle="tab">Users</a></li>-->
                                 </ul>
                             </div>
                             {{#unless isProcessing}}
@@ -276,17 +275,6 @@
                                         {{> resource}}
                                     {{/each}}
                                 </ul>
-                            </div>
-                            <div role="tabpanel" class="tab-pane" id="posts">
-                                <p>Posts: {{postsCount}}</p>
-                                {{#each posts}}
-                                    <div class="list-group">
-                                        <a href="#" class="list-group-item">
-                                            <h4 class="list-group-item-heading">{{title}}</h4>
-                                            <p class="list-group-item-text">{{url}}</p>
-                                        </a>
-                                    </div>
-                                {{/each}}
                             </div>
                         </div>
                     </div>
