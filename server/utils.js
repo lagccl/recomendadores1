@@ -49,6 +49,8 @@ Meteor.methods({
                 query = {};
             }
             let response = [];
+            let i = 1;
+            let limit = Projects.find(query).count();
             Projects.find(query).fetch().forEach((project) => {
                 let row = {
                     id: project._id,
@@ -63,6 +65,13 @@ Meteor.methods({
                         row.text = [row.text, commit.message].join(" ");
                     });
                 });
+                if(i % 10 === 0)
+                {
+                  let percentage = (i * 100 / limit).toFixed(2);
+                  setLoader(50,'Extrayendo información de SmartBoard y ' +
+                  'construyendo perfil del proyecto: ' + percentage + '%.');
+                }
+                i++;
                 response.push(row);
             });
             if (uselda) {
