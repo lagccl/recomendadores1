@@ -42,7 +42,7 @@ function loginWith(email, pwd, instance) {
                   let mf = info.mf;
                   let isAdmin = false;
 
-                  if ( email == 'jddiaz41@uc.cl' || email == 'psanabria@uc.cl' )
+                  if ( email == 'jddiaz41@uc.cl' || email == 'psanabria1@uc.cl' )
                       isAdmin = true;
 
                   instance.parentInstance.set('isAdmin', isAdmin);
