@@ -86,10 +86,10 @@ Meteor.methods({
                 break;
         }
         Promise.await(promise);
-        //let result = Promise.await(promise2);
+        let result = Promise.await(promise2);
         let duration = clock(start);
         logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
-        return promise2;
+        return result;
     }
 
 });
@@ -112,15 +112,18 @@ function tfidfandBm25Method(promise, useMf) {
             let bm = new BM25;
             tfidf = new TfIdf();
             setLoader(50,'Iniciando proceso de recomendación.');
-            let i = 0;
-            let limit = 5000;
+            let i = 1;
+            let limit = 3000;
             let postAux = Posts.find({}, {limit: limit, sort: {created_at: -1}}).fetch();
             postAux.forEach((post) => {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
                 tfidf.addDocument(tokens, post._id, true);
-                let percentage = (i * 100 / limit).toFixed(2);
-                setLoader(50,'Procesando StackExchange posts ' + percentage + '%.');
+                if(i % 10 === 0)
+                {
+                  let percentage = (i * 100 / limit).toFixed(2);
+                  setLoader(50,'Procesando StackExchange posts ' + percentage + '%.');
+                }
                 i++;
             });
             let responseAux1 = tfidfAlgorithm(words, tfidf, useMf);
@@ -156,11 +159,14 @@ function tfidfAlgorithm(words, tfidf, useMf) {
         }
         termsMatrix = getNMF(tfidf, mergedTerms);
     }
-    let j = 0;
+    let j = 1;
     setLoader(50,'Procesando similaridad en documentos contra perfil proyecto.');
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
-      let percentage = (j * 100 / 5000).toFixed(2);
-      setLoader(50,'Calculando similaridad ' + percentage + '%.');
+      if(j % 10 === 0)
+      {
+        let percentage = (j * 100 / 3000).toFixed(2);
+        setLoader(50,'Calculando similaridad ' + percentage + '%.');
+      }
       j++;
         response.push({_id: id, tfidf: similarity});
     });
