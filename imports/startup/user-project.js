@@ -1,7 +1,8 @@
 export const UserProject = {
-    'jddiaz4@uc.cl': {id: '185', username:'Juan', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
-    'aneyem@uc.cl': {id: '187', username:'Andres', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
-    'psanabria@uc.cl': {id: '191', username:'Pablo', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
+    'jddiaz4@uc.cl': {id: '185', username:'Juan', name: 'Meet&Greet', technique: '3', lda: true, mf: false},
+    'jddm11@gmail.com': {id: '185', username:'Juan', name: 'Meet&Greet', technique: '3', lda: true, mf: true},
+    'aneyem@uc.cl': {id: '187', username:'Andres', name: 'Salud Estudiantil', technique: '3', lda: false, mf: false},
+    'psanabria@uc.cl': {id: '191', username:'Pablo', name: 'BuyPass', technique: '3', lda: false, mf: false},
 
     'saalba@uc.cl': {id: '189', username:'Sebastian', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
     'dacasas@uc.cl': {id: '189', username:'Diego', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
@@ -13,15 +14,15 @@ export const UserProject = {
     'ratroncoso@uc.cl': {id: '189', username:'Rodrigo', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
     'favasquez@uc.cl': {id: '189', username:'Felipe', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
 
-    'fdaguayo@uc.cl': {id: '193', username:'Fernando', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
-    'cjcastil@uc.cl': {id: '193', username:'Cristobal', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
-    'jidiaz3@uc.cl': {id: '193', username:'Javier', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
-    'gmgarcia@uc.cl': {id: '193', username:'Gonzalo', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
-    'negebauer@uc.cl': {id: '193', username:'Nicolas', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
-    'cnnaranj@uc.cl': {id: '193', username:'Carolina', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
-    'pfnieto@uc.cl': {id: '193', username:'Pablo', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
-    'daquiroz@uc.cl': {id: '193', username:'Daniela', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
-    'farojos@uc.cl': {id: '193', username:'Felipe', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
-    'pfsamaja@uc.cl': {id: '193', username:'Pablo', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
+    'fdaguayo@uc.cl': {id: '193', username:'Fernando', name: 'DCC', technique: '3', lda: true, mf: false},
+    'cjcastil@uc.cl': {id: '193', username:'Cristobal', name: 'DCC', technique: '3', lda: false, mf: false},
+    'jidiaz3@uc.cl': {id: '193', username:'Javier', name: 'DCC', technique: '3', lda: true, mf: false},
+    'gmgarcia@uc.cl': {id: '193', username:'Gonzalo', name: 'DCC', technique: '3', lda: false, mf: false},
+    'negebauer@uc.cl': {id: '193', username:'Nicolas', name: 'DCC', technique: '3', lda: true, mf: false},
+    'cnnaranj@uc.cl': {id: '193', username:'Carolina', name: 'DCC', technique: '3', lda: false, mf: false},
+    'pfnieto@uc.cl': {id: '193', username:'Pablo', name: 'DCC', technique: '3', lda: true, mf: false},
+    'daquiroz@uc.cl': {id: '193', username:'Daniela', name: 'DCC', technique: '3', lda: false, mf: false},
+    'farojos@uc.cl': {id: '193', username:'Felipe', name: 'DCC', technique: '3', lda: true, mf: false},
+    'pfsamaja@uc.cl': {id: '193', username:'Pablo', name: 'DCC', technique: '3', lda: false, mf: false},
 
 };
