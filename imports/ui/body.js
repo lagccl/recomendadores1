@@ -22,8 +22,8 @@ Template.body.onCreated(function bodyOnCreated() {
     this.state.set('recommendations1', null);
     this.state.set('recommendations2', null);
 
-    /*Meteor.subscribe('loader');
-    Meteor.subscribe('ratings');
+    Meteor.subscribe('loader');
+    /*Meteor.subscribe('ratings');
     Meteor.subscribe('surveis');*/
     Meteor.callPromise("utils.projects").then((val) => {
         this.state.set('projects', val);
