@@ -69,7 +69,7 @@ Meteor.methods({
                         row.text = [row.text, commit.message].join(" ");
                     });
                 });
-                if(i % 10 === 0)
+                if(i % 100 === 0)
                 {
                   let percentage = (i * 100 / limit).toFixed(2);
                   setLoader(50,'Extrayendo información de SmartBoard y ' +
@@ -99,7 +99,7 @@ Meteor.methods({
                 promise2 = tfidfandBm25Method(promise, mf);
                 break;
         }
-        Promise.await(promise);
+        //Promise.await(promise);
         let result = Promise.await(promise2);
         let duration = clock(start);
         logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
@@ -131,7 +131,7 @@ function tfidfandBm25Method(promise, useMf) {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
                 tfidf.addDocument(tokens, post._id, true);
-                if(i % 10 === 0)
+                if(i % 100 === 0)
                 {
                   let percentage = (i * 100 / POST_LIMIT).toFixed(2);
                   setLoader(50,'Procesando StackExchange posts ' + percentage + '%.');
@@ -154,7 +154,7 @@ function bm25Algorithm(words, bm, useMf) {
     let response = [];
     let i = 0;
     bm.search(words.join(' '),function(result){
-      if(i % 10 === 0)
+      if(i % 100 === 0)
       {
         let percentage = (i * 100 / POST_LIMIT).toFixed(2);
         setLoader(50,'Procesando recomendaciones BM25 ' + percentage + '%.');
@@ -188,7 +188,7 @@ function tfidfAlgorithm(words, tfidf, useMf) {
     let j = 1;
     setLoader(50,'Procesando similaridad en documentos contra perfil proyecto.');
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
-      if(j % 10 === 0)
+      if(j % 100 === 0)
       {
         let percentage = (j * 100 / POST_LIMIT).toFixed(2);
         setLoader(50,'Calculando similaridad ' + percentage + '%.');
