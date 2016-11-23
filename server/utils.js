@@ -138,7 +138,9 @@ function tfidfandBm25Method(promise, useMf) {
                 i++;
             });
             let responseAux1 = tfidfAlgorithm(words, tfidf, useMf);
+            tfidf = null;
             let responseAux2 = bm25Algorithm(words, bm, useMf);
+            bm = null;
             resolve2({result1: responseAux1, result2: responseAux2, words: words});
         }));
     });
