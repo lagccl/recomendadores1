@@ -160,7 +160,7 @@ function tfidfAlgorithm(words, tfidf, useMf) {
     setLoader(50,'Procesando similaridad en documentos contra perfil proyecto.');
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
       let percentage = (j * 100 / 5000).toFixed(2);
-      setLoader(50,'Calculando similaridad' + percentage + '%.');
+      setLoader(50,'Calculando similaridad ' + percentage + '%.');
       j++;
         response.push({_id: id, tfidf: similarity});
     });
