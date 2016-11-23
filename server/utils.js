@@ -126,7 +126,7 @@ function tfidfandBm25Method(promise, useMf) {
             tfidf = new TfIdf();
             setLoader(50,'Iniciando proceso de recomendación.');
             let i = 1;
-            let postAux = Posts.find({}, {limit: limit, sort: {created_at: -1}}).fetch();
+            let postAux = Posts.find({}, {limit: POST_LIMIT, sort: {created_at: -1}}).fetch();
             postAux.forEach((post) => {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
@@ -209,7 +209,7 @@ function bm25Method(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
             let bm = new BM25;
-            let postsAux = Posts.find({}, {limit: 1000}).fetch();
+            let postsAux = Posts.find({}, {limit: POST_LIMIT}).fetch();
             postsAux.forEach(function (post) {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
@@ -225,7 +225,7 @@ function tfidfMethod(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
         matchQuery(promise, useMf, Meteor.bindEnvironment((words, useMf) => {
             tfidf = new TfIdf();
-            let postsAux = Posts.find({}, {limit: 1000}).fetch();
+            let postsAux = Posts.find({}, {limit: POST_LIMIT}).fetch();
             postsAux.forEach(function (post) {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 tfidf.addDocument(document, post._id, true);
