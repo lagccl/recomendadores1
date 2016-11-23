@@ -99,7 +99,7 @@ Meteor.methods({
                 promise2 = tfidfandBm25Method(promise, mf);
                 break;
         }
-        //Promise.await(promise);
+        Promise.await(promise);
         let result = Promise.await(promise2);
         let duration = clock(start);
         logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
