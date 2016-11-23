@@ -65,12 +65,12 @@ Meteor.methods({
                         row.text = [row.text, commit.message].join(" ");
                     });
                 });
-                if(i % 10 === 0)
-                {
+                //if(i % 10 === 0)
+                //{
                   let percentage = (i * 100 / limit).toFixed(2);
                   setLoader(50,'Extrayendo información de SmartBoard y ' +
                   'construyendo perfil del proyecto: ' + percentage + '%.');
-                }
+                //}
                 i++;
                 response.push(row);
             });
