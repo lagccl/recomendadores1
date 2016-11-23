@@ -117,7 +117,7 @@ function tfidfandBm25Method(promise, useMf) {
             //let postsAux = Posts.find({}, {limit:3000,sort:{created_at:-1}}).fetch();
             //console.log(postsAux.length);
             let i = 1;
-            let limit = 3500;
+            let limit = 3000;
             Posts.find({}, {limit: limit, sort: {created_at: -1}}).forEach((post) => {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
