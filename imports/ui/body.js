@@ -23,13 +23,6 @@ Template.body.onCreated(function bodyOnCreated() {
     this.state.set('recommendations1', null);
     this.state.set('recommendations2', null);
 
-    // client code: ping heartbeat every 5 seconds
-    Meteor.setInterval(function () {
-      Meteor.call('utils.keepalive',function(){
-        console.log('alive');
-      });
-    }, 5000);
-
     Meteor.call('loader.removeAll','uno');
     Meteor.call('loader.insert','uno',0,'');
 

@@ -31,9 +31,6 @@ const BM25_TYPE  = '2';
 const BOTH_TYPE  = '3';
 
 Meteor.methods({
-    'utils.keepalive'(){
-      console.log('you are alive');
-    },
     'utils.projects'(){
         let promise = new Promise((resolve) => {
             resolve(Projects.find({_id: {$in: [134,135,136,137,138,185,187,189,191,193]}}).fetch());

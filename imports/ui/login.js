@@ -50,6 +50,7 @@ function loginWith(email, pwd, instance) {
                   instance.parentInstance.set('userEmail', email);
                   instance.parentInstance.set('projectName', info.name);
 
+
                   if (!isAdmin) {
                       instance.parentInstance.set('loading', true);
                       Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val_aux) => {
