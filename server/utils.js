@@ -23,6 +23,7 @@ let logger = log4js.getLogger('iknow');
 let tfidf;
 TfIdf = natural.TfIdf;
 let extend = util._extend;
+let email;
 
 /*Constants*/
 const TFIDF_TYPE = '1';
@@ -39,6 +40,7 @@ Meteor.methods({
 
     'utils.recommendations'(id, method, uselda = false, mf = false){
         let start = clock();
+        email = Meteor.user().emails[0].address;
         setLoader(15,'Extrayendo información de SmartBoard y ' +
         'construyendo perfil del proyecto.');
         let promise = new Promise((resolve) => {
@@ -46,7 +48,8 @@ Meteor.methods({
             if (uselda) {
                 query = {_id: id};
             } else {
-                query = {_id: {$in: [134, 135, 136, 137, 138, 185, 187, 189, 191, 193]}};
+                //_id: {$in: [134, 135, 136, 137, 138, 185, 187, 189, 191, 193]}
+                query = {};
             }
             let response = [];
             //let i = 1;
@@ -105,7 +108,6 @@ Meteor.methods({
 
 function setLoader(percentage,description)
 {
-  let email = Meteor.user().emails[0].address;
   Loader.update({email: email}, {
       $set: {
           percentage: percentage, description: description
