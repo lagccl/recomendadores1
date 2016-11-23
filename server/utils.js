@@ -69,7 +69,7 @@ Meteor.methods({
                         row.text = [row.text, commit.message].join(" ");
                     });
                 });
-                if(i % 100 === 0)
+                if(i % 10 === 0)
                 {
                   let percentage = (i * 100 / limit).toFixed(2);
                   setLoader(50,'Extrayendo información de SmartBoard y ' +
@@ -100,10 +100,10 @@ Meteor.methods({
                 break;
         }
         Promise.await(promise);
-        let result = Promise.await(promise2);
+        //let result = Promise.await(promise2);
         let duration = clock(start);
         logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
-        return result;
+        return promise2;
     }
 
 });
@@ -131,7 +131,7 @@ function tfidfandBm25Method(promise, useMf) {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
                 tfidf.addDocument(tokens, post._id, true);
-                if(i % 100 === 0)
+                if(i % 10 === 0)
                 {
                   let percentage = (i * 100 / POST_LIMIT).toFixed(2);
                   setLoader(50,'Procesando StackExchange posts ' + percentage + '%.');
@@ -152,9 +152,9 @@ function bm25Algorithm(words, bm, useMf) {
     setLoader(80,'Procesando recomendaciones BM25.');
     bm.updateIdf();
     let response = [];
-    let i = 0;
+    let i = 1;
     bm.search(words.join(' '),function(result){
-      if(i % 100 === 0)
+      if(i % 10 === 0)
       {
         let percentage = (i * 100 / POST_LIMIT).toFixed(2);
         setLoader(50,'Procesando recomendaciones BM25 ' + percentage + '%.');
@@ -188,7 +188,7 @@ function tfidfAlgorithm(words, tfidf, useMf) {
     let j = 1;
     setLoader(50,'Procesando similaridad en documentos contra perfil proyecto.');
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
-      if(j % 100 === 0)
+      if(j % 10 === 0)
       {
         let percentage = (j * 100 / POST_LIMIT).toFixed(2);
         setLoader(50,'Calculando similaridad ' + percentage + '%.');
