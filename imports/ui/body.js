@@ -84,7 +84,7 @@ Template.body.helpers({
     },
     loader(){
         let email = Meteor.user().emails[0].address;
-        return Loader.findOne({email: 'jddiaz4@uc.cl'});
+        return Loader.findOne({email: email});
     },
     resources(){
         const instance = Template.instance();
