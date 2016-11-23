@@ -50,6 +50,8 @@ function loginWith(email, pwd, instance) {
                   instance.parentInstance.set('userEmail', email);
                   instance.parentInstance.set('projectName', info.name);
 
+                  Meteor.call('loader.removeAll',email);
+                  Meteor.call('loader.insert',email,0,'');
 
                   if (!isAdmin) {
                       instance.parentInstance.set('loading', true);

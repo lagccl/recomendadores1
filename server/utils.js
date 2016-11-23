@@ -39,12 +39,8 @@ Meteor.methods({
 
     'utils.recommendations'(id, method, uselda = false, mf = false){
         let start = clock();
-        Loader.update({name: 'uno'}, {
-            $set: {
-                percentage: 15, description: 'Extrayendo información de SmartBoard y ' +
-                'construyendo perfil del proyecto.'
-            }
-        });
+        setLoader(15,'Extrayendo información de SmartBoard y ' +
+        'construyendo perfil del proyecto.');
         let promise = new Promise((resolve) => {
             let query = '';
             if (uselda) {
@@ -99,6 +95,16 @@ Meteor.methods({
 
 });
 
+function setLoader(percentage,description)
+{
+  let email = Meteor.user().emails[0].address;
+  Loader.update({email: email}, {
+      $set: {
+          percentage: percentage, description: description
+      }
+  });
+}
+
 function tfidfandBm25Method(promise, useMf) {
     var promise2 = new Promise((resolve2) => {
 
@@ -106,23 +112,18 @@ function tfidfandBm25Method(promise, useMf) {
 
             let bm = new BM25;
             tfidf = new TfIdf();
-            Loader.update({name: 'uno'}, {$set: {percentage: 50, description: 'Iniciando proceso de recomendación.'}});
+            setLoader(50,'Iniciando proceso de recomendación.');
             //let postsAux = Posts.rawCollection().aggregate([ { $sample: { size: 30 } } ]);
             //let postsAux = Posts.find({}, {limit:3000,sort:{created_at:-1}}).fetch();
             //console.log(postsAux.length);
-            let i = 0;
+            let i = 1;
             let limit = 3500;
             Posts.find({}, {limit: limit, sort: {created_at: -1}}).forEach((post) => {
                 let tokens = cleanInformation(post.title + ' ' + post.text);
                 bm.addDocument({id: post._id, tokens: tokens});
                 tfidf.addDocument(tokens, post._id, true);
-                let percentage = (i * 100 / limit);
-                Loader.update({name: 'uno'}, {
-                    $set: {
-                        percentage: 50,
-                        description: 'Calculado el ' + percentage + '%.'
-                    }
-                });
+                let percentage = (i * 100 / limit).toFixed(2);
+                setLoader(50,'Calculado el ' + percentage + '%.');
                 i++;
             });
 
@@ -135,7 +136,7 @@ function tfidfandBm25Method(promise, useMf) {
 }
 
 function bm25Algorithm(words, bm, useMf) {
-    Loader.update({name: 'uno'}, {$set: {percentage: 80, description: 'Procesando recomendaciones BM25.'}});
+    setLoader(80,'Procesando recomendaciones BM25.');
     bm.updateIdf();
     var response = bm.search(words.join(' '));
     response = response.sort((a, b) => b._score - a._score).slice(0, 5);
@@ -151,12 +152,7 @@ function tfidfAlgorithm(words, tfidf, useMf) {
     let mergedTerms = null;
     let termsMatrix = null;
     if (useMf) {
-        Loader.update({name: 'uno'}, {
-            $set: {
-                percentage: 60,
-                description: 'Ejecutando matrix factorization sobre matrix TF-IDF.'
-            }
-        });
+        setLoader(60,'Ejecutando matrix factorization sobre matrix TF-IDF.');
         mergedTerms = [];
         for (let i = 0; i < tfidf.documents.length; i++) {
             let keys = Object.keys(tfidf.documents[i]);
@@ -164,12 +160,7 @@ function tfidfAlgorithm(words, tfidf, useMf) {
         }
         termsMatrix = getNMF(tfidf, mergedTerms);
     }
-    Loader.update({name: 'uno'}, {
-        $set: {
-            percentage: 50,
-            description: 'Procesando similaridad en documentos contra perfil proyecto.'
-        }
-    });
+    setLoader(50,'Procesando similaridad en documentos contra perfil proyecto.');
     similarity(tfidf, words, termsMatrix, mergedTerms, function (i, similarity, id) {
         response.push({_id: id, tfidf: similarity});
     });

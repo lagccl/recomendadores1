@@ -23,9 +23,6 @@ Template.body.onCreated(function bodyOnCreated() {
     this.state.set('recommendations1', null);
     this.state.set('recommendations2', null);
 
-    Meteor.call('loader.removeAll','uno');
-    Meteor.call('loader.insert','uno',0,'');
-
     Meteor.subscribe('loader');
     Meteor.subscribe('ratings');
     Meteor.subscribe('posts');
@@ -86,7 +83,8 @@ Template.body.helpers({
         return instance.state.get('projects');
     },
     loader(){
-        return Loader.findOne({name: 'uno'});
+        let email = Meteor.user().emails[0].address;
+        return Loader.findOne({email: 'jddiaz4@uc.cl'});
     },
     resources(){
         const instance = Template.instance();

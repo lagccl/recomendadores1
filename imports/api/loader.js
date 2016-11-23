@@ -10,18 +10,18 @@ if (Meteor.isServer) {
 }
 
 Meteor.methods({
-    'loader.insert'(name, percentage, description) {
-        check(name, String);
+    'loader.insert'(email, percentage, description) {
+        check(email, String);
         Loader.insert({
-            name: name,
+            email: email,
             percentage: percentage,
             description: description
         });
     },
-    'loader.removeAll'(name) {
-        check(name, String);
+    'loader.removeAll'(email) {
+        check(email, String);
         Loader.remove({
-            name: name
+            email: email
         });
     },
 });
