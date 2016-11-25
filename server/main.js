@@ -4,7 +4,6 @@ import "../imports/api/surveis.js";
 import {Meteor} from "meteor/meteor";
 import "./utils.js";
 import {importData} from "./mongoimporter";
-import '@risingstack/trace';
 
 Meteor.startup(() => {
   //process.env.DISABLE_WEBSOCKETS = 1;
