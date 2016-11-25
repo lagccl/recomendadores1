@@ -29,7 +29,7 @@ let email;
 const TFIDF_TYPE = '1';
 const BM25_TYPE = '2';
 const BOTH_TYPE = '3';
-const POST_LIMIT = 3000;
+const POST_LIMIT = 2000;
 
 Meteor.methods({
     'utils.projects'(){
@@ -50,7 +50,7 @@ Meteor.methods({
                 query = {_id: id};
             } else {
                 //_id: {$in: [134, 135, 136, 137, 138, 185, 187, 189, 191, 193]}
-                query = {};
+                query = {_id: {$in: [134, 135, 136, 137, 138, 185, 187, 189, 191, 193]}};
             }
             let response = [];
             let i = 1;
