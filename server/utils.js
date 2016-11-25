@@ -104,7 +104,7 @@ Meteor.methods({
           let duration = clock(start);
           logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
           console.log(values);
-          return values;
+          return values[1];
         }).catch(reason => {
           console.log(reason)
           return reason;
