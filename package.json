@@ -6,6 +6,7 @@
     "seed": "meteor node .scripts/mongoimporter"
   },
   "dependencies": {
+    "@risingstack/trace": "^2.36.0",
     "babel-runtime": "^6.18.0",
     "bcrypt": "^0.8.7",
     "html-to-text": "^2.1.3",
