@@ -103,9 +103,10 @@ Meteor.methods({
         return Promise.all([promise,promise2]).then(values => {
           let duration = clock(start);
           logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
-          return values[1];
+          console.log(values);
+          return values;
         }).catch(reason => {
-          //console.log(reason)
+          console.log(reason)
           return reason;
         });
         //let result = Promise.await(promise2);
