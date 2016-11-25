@@ -55,7 +55,8 @@ function loginWith(email, pwd, instance) {
 
                   if (!isAdmin) {
                       instance.parentInstance.set('loading', true);
-                      Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val_aux) => {
+                      //Meteor.callPromise("utils.recommendations", id, technique, lda, mf).then((val_aux) => {
+                      Meteor.call("utils.recommendations", id, technique, lda, mf, function(val_aux){
                           instance.parentInstance.set('recommendations1', val_aux.result1);
                           if (val_aux.result2) {
                               instance.parentInstance.set('recommendations2', val_aux.result2);

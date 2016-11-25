@@ -83,7 +83,6 @@ Meteor.methods({
             } else {
                 words = tfidfWords(response, id);
             }
-            tfidf = null;
             resolve(words);
         });
 
@@ -99,11 +98,18 @@ Meteor.methods({
                 promise2 = tfidfandBm25Method(promise, mf);
                 break;
         }
-        Promise.await(promise);
+        //Promise.await(promise);
+        // Evenly, it's possible to use .catch
+        Promise.all([promise,promise2]).then(values => {
+          let duration = clock(start);
+          logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
+          return values[1];
+        }).catch(reason => {
+          //console.log(reason)
+          return reason;
+        });
         //let result = Promise.await(promise2);
-        let duration = clock(start);
-        logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
-        return promise2;
+        //return promise2;
     }
 
 });

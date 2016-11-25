@@ -25,9 +25,9 @@ Template.body.onCreated(function bodyOnCreated() {
     Meteor.subscribe('loader');
     /*Meteor.subscribe('ratings');
     Meteor.subscribe('surveis');*/
-    Meteor.callPromise("utils.projects").then((val) => {
+    /*Meteor.callPromise("utils.projects").then((val) => {
         this.state.set('projects', val);
-    });
+    });*/
 });
 
 Template.body.helpers({
