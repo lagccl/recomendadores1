@@ -100,7 +100,7 @@ Meteor.methods({
         }
         //Promise.await(promise);
         // Evenly, it's possible to use .catch
-        Promise.all([promise,promise2]).then(values => {
+        return Promise.all([promise,promise2]).then(values => {
           let duration = clock(start);
           logger.info("Method: " + method + ", LDA: " + uselda + ", MF: " + mf + " and duration: " + duration + " ms");
           return values[1];
