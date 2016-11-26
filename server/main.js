@@ -1,3 +1,4 @@
+import "newrelic"
 import "../imports/api/posts.js";
 import "../imports/api/ratings.js";
 import "../imports/api/surveis.js";
