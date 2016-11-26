@@ -3,7 +3,7 @@ export const UserProject = {
     'jddm11@gmail.com': {id: '185', username:'Juan', name: 'Meet&Greet', technique: '3', lda: false, mf: false},
     'aneyem@uc.cl': {id: '187', username:'Andres', name: 'Salud Estudiantil', technique: '3', lda: false, mf: false},
     'aneyem.academic@gmail.com': {id: '189', username:'Andres', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
-    'psanabria@uc.cl': {id: '191', username:'Pablo', name: 'BuyPass', technique: '3', lda: false, mf: false},
+    'psanabria@uc.cl': {id: '185', username:'Pablo', name: 'BuyPass', technique: '3', lda: true, mf: false},
 
     'saalba@uc.cl': {id: '189', username:'Sebastian', name: 'Anatomia UC', technique: '3', lda: false, mf: false},
     'dacasas@uc.cl': {id: '189', username:'Diego', name: 'Anatomia UC', technique: '3', lda: true, mf: false},
