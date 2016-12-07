@@ -29,7 +29,7 @@ let email;
 const TFIDF_TYPE = '1';
 const BM25_TYPE = '2';
 const BOTH_TYPE = '3';
-const POST_LIMIT = 2000;
+const POST_LIMIT = 4000;
 
 Meteor.methods({
     'utils.projects'(){
@@ -279,6 +279,7 @@ function ldaWords(document) {
     let words = [];
     let terms = [];
     // For each topic.
+    console.log(result);
     for (var i in result) {
         var row = result[i];
         var h = 0;
